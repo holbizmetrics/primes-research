@@ -1,0 +1,12 @@
+svar(z)={my(s,m);if(#z<5,return(-1));s=vector(#z-1,i,z[i+1]-z[i]);m=vecsum(s)/#s;vecsum(vector(#s,i,(s[i]/m-1)^2))/#s}
+print("=== ANOMALY SCAN ===")
+E=ellinit([0,-1,1,-10,-20]);c=ellglobalred(E)[1];r=ellrank(E)[1];z=lfunzeros(lfuncreate(E),80);printf("11a1      cond=%d r=%d var=%.4f\n",c,r,svar(z))
+E=ellinit([0,0,0,-1,0]);c=ellglobalred(E)[1];r=ellrank(E)[1];z=lfunzeros(lfuncreate(E),80);printf("32a1(CM)  cond=%d r=%d var=%.4f\n",c,r,svar(z))
+E=ellinit([0,0,0,0,1]);c=ellglobalred(E)[1];r=ellrank(E)[1];z=lfunzeros(lfuncreate(E),80);printf("27a1(CM)  cond=%d r=%d var=%.4f\n",c,r,svar(z))
+E=ellinit([0,0,1,-1,0]);c=ellglobalred(E)[1];r=ellrank(E)[1];z=lfunzeros(lfuncreate(E),80);printf("37a1(r1)  cond=%d r=%d var=%.4f\n",c,r,svar(z))
+E=ellinit([0,1,1,-2,0]);c=ellglobalred(E)[1];r=ellrank(E)[1];z=lfunzeros(lfuncreate(E),80);printf("389a1(r2) cond=%d r=%d var=%.4f\n",c,r,svar(z))
+E=ellinit([0,0,1,0,0]);c=ellglobalred(E)[1];r=ellrank(E)[1];z=lfunzeros(lfuncreate(E),80);printf("19a1      cond=%d r=%d var=%.4f\n",c,r,svar(z))
+E=ellinit([1,0,1,-2,-1]);c=ellglobalred(E)[1];r=ellrank(E)[1];z=lfunzeros(lfuncreate(E),80);printf("46a1      cond=%d r=%d var=%.4f\n",c,r,svar(z))
+E=ellinit([0,0,1,-7,6]);c=ellglobalred(E)[1];r=ellrank(E)[1];z=lfunzeros(lfuncreate(E),80);printf("91b1      cond=%d r=%d var=%.4f\n",c,r,svar(z))
+E=ellinit([0,0,1,1,0]);c=ellglobalred(E)[1];r=ellrank(E)[1];z=lfunzeros(lfuncreate(E),80);printf("43a1      cond=%d r=%d var=%.4f\n",c,r,svar(z))
+print("Done.")
