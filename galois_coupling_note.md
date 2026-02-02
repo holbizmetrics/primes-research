@@ -1,7 +1,7 @@
 # Galois Induction Coupling and Dedekind Zeta Variance
 
 **Date:** 2026-02-03
-**Status:** Empirical observation, marginally significant (p ≈ 0.06)
+**Status:** Empirically confirmed, highly significant (p < 0.001)
 
 ## Abstract
 
@@ -51,8 +51,8 @@ In Random Matrix Theory terms:
 
 ### Test Design
 
-For squarefree d ∈ {2, 3, 5, 6, 7, 10, 11, 13, 15}:
-1. Compute zeros of ζ_{Q(√d)} and ζ_{Q(∛d)} up to height T=60
+For squarefree d ∈ {2, 3, 5, 6, 7, 10, 11, 13, 15, 17, 19, 21, 22, 23, 26, 29, 30, 31, 33, 34, 35, 37, 38, 39, 41, 42, 43, 46, 47}:
+1. Compute zeros of ζ_{Q(√d)} and ζ_{Q(∛d)} up to height T=50-60
 2. Calculate normalized spacing variance for each
 3. Compare abelian vs non-abelian
 
@@ -69,18 +69,38 @@ For squarefree d ∈ {2, 3, 5, 6, 7, 10, 11, 13, 15}:
 | 11 | 0.282 | 0.268 | +0.014 |
 | 13 | 0.369 | 0.239 | +0.130 |
 | 15 | 0.282 | 0.284 | -0.002 |
+| 17 | 0.307 | 0.238 | +0.069 |
+| 19 | 0.304 | 0.243 | +0.061 |
+| 21 | 0.305 | 0.253 | +0.052 |
+| 22 | 0.279 | 0.264 | +0.015 |
+| 23 | 0.334 | 0.257 | +0.077 |
+| 26 | 0.271 | 0.264 | +0.007 |
+| 29 | 0.386 | 0.284 | +0.102 |
+| 30 | 0.267 | 0.262 | +0.005 |
+| 31 | 0.273 | 0.252 | +0.021 |
+| 33 | 0.288 | 0.225 | +0.063 |
+| 34 | 0.273 | 0.282 | -0.009 |
+| 35 | 0.251 | 0.229 | +0.022 |
+| 37 | 0.351 | 0.246 | +0.105 |
+| 38 | 0.292 | 0.250 | +0.042 |
+| 39 | 0.237 | 0.217 | +0.020 |
+| 41 | 0.347 | 0.250 | +0.097 |
+| 42 | 0.274 | 0.227 | +0.047 |
+| 43 | 0.286 | 0.257 | +0.029 |
+| 46 | 0.282 | 0.245 | +0.037 |
+| 47 | 0.286 | 0.237 | +0.049 |
 
 ### Statistical Summary
 
 ```
-Sample size:           n = 9 field pairs
-Non-abelian lower:     7/9 cases (78%)
-Mean abelian var:      0.289
-Mean non-abelian var:  0.259
-Mean difference:       0.031 ± 0.014
-Effect size:           ~11% reduction
-t-statistic:           2.15
-p-value:               ≈ 0.06 (marginally significant)
+Sample size:           n = 29 field pairs
+Non-abelian lower:     26/29 cases (89.7%)
+Mean abelian var:      0.293
+Mean non-abelian var:  0.252
+Mean difference:       0.041 ± 0.007
+Effect size:           14.0% reduction
+t-statistic:           6.09
+p-value:               < 0.001 (HIGHLY SIGNIFICANT)
 ```
 
 ## 4. Discussion
@@ -101,10 +121,10 @@ None address the specific question of how Artin factorization structure affects 
 
 ### Caveats
 
-1. **Sample size:** n=9 is small; p ≈ 0.06 is marginally significant
-2. **Discriminant confound:** Q(∛d) has different discriminant than Q(√d)
-3. **Degree effect:** Cubic vs quadratic might matter independently of Galois structure
-4. **Finite height:** Effects might vanish as T → ∞
+1. **Discriminant confound:** Q(∛d) has different discriminant than Q(√d)
+2. **Degree effect:** Cubic vs quadratic might matter independently of Galois structure
+3. **Finite height:** Effects might change as T → ∞
+4. **Need theoretical derivation:** RMT explanation not yet formalized
 
 ### Predictions
 
@@ -124,9 +144,15 @@ If the hypothesis is correct:
 
 ## 6. Conclusion
 
-We present empirical evidence for a novel phenomenon: non-abelian Dedekind zeta functions have lower spacing variance than abelian ones, possibly due to correlations induced by shared factors in the Artin factorization. The effect is consistent (7/9 cases) with ~11% magnitude, but requires more data for statistical confirmation.
+We present strong empirical evidence for a novel phenomenon: non-abelian Dedekind zeta functions have significantly lower spacing variance than abelian ones. With n=29 field pairs:
 
-If confirmed, this would be a new connection between Galois theory and random matrix statistics of L-function zeros.
+- **Effect observed in 26/29 cases (89.7%)**
+- **14% average variance reduction**
+- **t = 6.09, p < 0.001**
+
+We propose this arises from correlations induced by shared factors in the Artin factorization (the "Galois induction coupling" mechanism).
+
+This appears to be a new connection between Galois theory and random matrix statistics of L-function zeros. A theoretical derivation from RMT principles would strengthen the result.
 
 ---
 
