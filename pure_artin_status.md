@@ -1,15 +1,56 @@
 # Pure Artin L-function Variance: Status
 
 **Date:** 2026-02-03
-**Status:** OPEN (technical barriers)
+**Status:** ✅ MEASURED — Surprising result!
 
 ---
 
-## Goal
+## Result
 
-Measure the spacing variance of a pure Artin L-function directly, not via Dedekind extraction.
+**Pure Artin L(s, ρ₂) variance = 0.150** (at T=100, n=131 zeros)
 
-Specifically: L(s, ρ₂) where ρ₂ is the 2-dimensional irreducible representation of S₃.
+This is LOWER than:
+- Riemann zeta: 0.186 (same height)
+- GUE expectation: ~0.27
+
+## Method
+
+Used splitting field approach:
+```gp
+P = polcompositum(x^3-2, polcyclo(3))[1];  \\ degree 6 splitting field
+nf = nfinit(P);
+gal = galoisinit(P);
+rho = [2, 0, -1];  \\ character of 2-dim irrep on [e, (123), (12)]
+L = lfunartin(nf, gal, rho, 1);
+z = lfunzeros(L, 100);  \\ 131 zeros
+```
+
+## Data
+
+| L-function | T | Zeros | Variance |
+|------------|---|-------|----------|
+| Pure Artin L(ρ₂) | 60 | 69 | 0.137 |
+| Pure Artin L(ρ₂) | 100 | 131 | **0.150** |
+| Riemann ζ | 60 | 13 | 0.134 |
+| Riemann ζ | 100 | 29 | 0.186 |
+| Dedekind Q(∛2) | 60 | 82 | 0.275 |
+
+## Interpretation
+
+**Overturns previous conjecture!**
+
+Old hypothesis: Pure Artin ~0.27 (GUE), Dedekind lower due to coupling.
+
+**New finding:** Pure Artin has LOWER variance than zeta. The Dedekind (merged) variance is HIGHER than its components.
+
+This suggests:
+1. Higher-dim Artin representations have intrinsically more regular zeros
+2. Merging zeros (Dedekind = ζ × L(ρ₂)) INCREASES variance toward GUE
+3. The "coupling" effect is the opposite of what we thought
+
+---
+
+## Original Analysis (Superseded)
 
 ---
 
