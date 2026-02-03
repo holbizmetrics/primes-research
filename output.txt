@@ -1,0 +1,62 @@
+Sieving up to 10000000...
+Found 664579 primes
+Found 58980 twin prime pairs
+
+=== Gaps immediately after twin primes ===
+Most common:
+  Gap 10: 9749 times (16.53%)
+  Gap 4: 8543 times (14.48%)
+  Gap 6: 7727 times (13.10%)
+  Gap 12: 6605 times (11.20%)
+  Gap 18: 4985 times (8.45%)
+  Gap 16: 4211 times (7.14%)
+  Gap 28: 3256 times (5.52%)
+  Gap 22: 3240 times (5.49%)
+  Gap 24: 2518 times (4.27%)
+  Gap 30: 1928 times (3.27%)
+
+=== Gaps immediately before twin primes ===
+Most common:
+  Gap 10: 9734 times (16.50%)
+  Gap 4: 8677 times (14.71%)
+  Gap 6: 7616 times (12.91%)
+  Gap 12: 6559 times (11.12%)
+  Gap 18: 4985 times (8.45%)
+  Gap 16: 4189 times (7.10%)
+  Gap 28: 3228 times (5.47%)
+  Gap 22: 3168 times (5.37%)
+  Gap 24: 2565 times (4.35%)
+  Gap 30: 1923 times (3.26%)
+
+=== General gap distribution ===
+Most common:
+  Gap 6: 99987 times (15.05%)
+  Gap 12: 65513 times (9.86%)
+  Gap 2: 58980 times (8.87%)
+  Gap 4: 58621 times (8.82%)
+  Gap 10: 54431 times (8.19%)
+  Gap 18: 43851 times (6.60%)
+  Gap 8: 42352 times (6.37%)
+  Gap 14: 35394 times (5.33%)
+  Gap 24: 27170 times (4.09%)
+  Gap 16: 25099 times (3.78%)
+
+=== Averages ===
+Average gap after twin: 16.4998
+Average gap overall:    15.0471
+Ratio: 1.0965
+
+=== Consecutive twin prime pairs (twin-gap-twin) ===
+Found 5274 instances
+Middle gaps: [(10, 1773), (4, 899), (16, 811), (28, 725), (22, 419), (40, 251), (34, 157), (46, 82), (58, 57), (52, 37)]
+First few examples:
+  (5,7) -- gap 4 -- (13,15)
+  (11,13) -- gap 4 -- (19,21)
+  (101,103) -- gap 4 -- (109,111)
+  (137,139) -- gap 10 -- (151,153)
+  (179,181) -- gap 10 -- (193,195)
+  (191,193) -- gap 4 -- (199,201)
+  (419,421) -- gap 10 -- (433,435)
+  (809,811) -- gap 10 -- (823,825)
+  (821,823) -- gap 4 -- (829,831)
+  (1019,1021) -- gap 10 -- (1033,1035)
