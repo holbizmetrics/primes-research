@@ -1,0 +1,8 @@
+Gap AP 12 extended search from 2×10^11
+(p)->local(v,g,d,ok);v=vector(12);v[1]=p;for(i=2,12,v[i]=nextprime(v[i-1]+1));g=vector(11,i,v[i+1]-v[i]);d=g[2]-g[1];ok=1;for(i=2,10,if(g[i+1]-g[i]!=d,ok=0));if(ok,print("FOUND p=",p," gaps=",g));ok
+Checked 1000000 at p=200026023293
+Checked 2000000 at p=200052051211
+Checked 3000000 at p=200078095913
+Checked 4000000 at p=200104124711
+Checked 5000000 at p=200130147461
+Done
