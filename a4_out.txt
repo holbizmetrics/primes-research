@@ -1,0 +1,20 @@
+=== A4 Galois Group Variance Test ===
+(z)->my(s,m,n);if(#z<5,return(-1));s=vector(#z-1,i,z[i+1]-z[i]);m=vecsum(s)/#s;n=vector(#s,i,s[i]/m);vecsum(vector(#n,i,(n[i]-1)^2))/#n
+Testing: x^4 + 8*x + 12
+Disc: 331776 sqrt: 576
+Galois: [12, 1, 1, "A4"]
+A4 #1: zeros=104 var=0.27628835748084123394035556265575690298
+Testing: x^4 - 5*x^2 + 5 Galois: [4, -1, 1, "C(4) = 4"]
+  ***   syntax error, unexpected end of file, expecting )-> or ',' or ')': 
+  ***   if(g2[1]==12,
+  ***               ^-
+A4 #2: zeros=93 var=0.57565966034742496994623290045437724746
+  ***   syntax error, unexpected ')', expecting end of file: );
+  ***                                                        ^--
+Testing: x^4 + x^2 - 1 Galois: [8, -1, 1, "D(4)"]
+  ***   syntax error, unexpected end of file, expecting )-> or ',' or ')': 
+  ***   if(g3[1]==12,
+  ***               ^-
+A4 #3: zeros=83 var=0.39301570039528881119594621546464811114
+  ***   syntax error, unexpected ')', expecting end of file: );
+  ***                                                        ^--

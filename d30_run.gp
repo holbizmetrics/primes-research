@@ -1,0 +1,1 @@
+{d=30;g1=0;g2=0;g3=0;g4=0;g5=0;prev=2;found=0;forprime(p=3,prime(10^6),g5=g4;g4=g3;g3=g2;g2=g1;g1=p-prev;if(g5>0&&g2-g1==d&&g3-g2==d&&g4-g3==d&&g5-g4==d,found++;print("L5+ ",p));if(g5>0&&g2-g1==-d&&g3-g2==-d&&g4-g3==-d&&g5-g4==-d,found++;print("L5- ",p));prev=p);print("Search complete. Found: ",found)}

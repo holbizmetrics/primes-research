@@ -1,0 +1,15 @@
+Searching for length-9 gap APs up to 10M...
+Progress: checked 50000 primes, now at p=611977
+Progress: checked 100000 primes, now at p=1299763
+Progress: checked 150000 primes, now at p=2015201
+Progress: checked 200000 primes, now at p=2750177
+Progress: checked 250000 primes, now at p=3497891
+Progress: checked 300000 primes, now at p=4256261
+Progress: checked 350000 primes, now at p=5023363
+Progress: checked 400000 primes, now at p=5800189
+Progress: checked 450000 primes, now at p=6581987
+Progress: checked 500000 primes, now at p=7368817
+Progress: checked 550000 primes, now at p=8163109
+Progress: checked 600000 primes, now at p=8960489
+Progress: checked 650000 primes, now at p=9763493
+Total found: 0

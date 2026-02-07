@@ -346,6 +346,58 @@ It enables:
 
 ---
 
-*Specification: 2026-02-05*
+*Specification: 2026-02-05, Updated 2026-02-06*
 
 *"The spectrometer that sees primes"*
+
+---
+
+## UPDATES FROM 2026-02-06 SESSION
+
+### New γ₉ Fibonacci Formula (Task #1 Complete)
+
+```
+γ₉ = 48 + 7/1359
+   = (F₁₀ - F₈/3) + 7/(3² × 151)
+
+Error: 3.5 × 10⁻⁸ (10× better than γ₂!)
+```
+
+**Add to v4:** Zeta Zero Formula Tester
+- Input: zeta zero index n
+- Search: Fibonacci formulas F_k ± F_j/d
+- Display: best matches with error
+
+### Ramanujan Bridge Formalization (Task #2 Complete)
+
+See `RAMANUJAN_BRIDGE.md` for full theory.
+
+**Key equations for implementation:**
+```javascript
+// Prime coherence (theoretical)
+function ramanujanCoherence(lambda) {
+    const mu = mobius(lambda);
+    if (mu === 0) return 0;
+    const phi = eulerTotient(lambda);
+    return (mu * mu) / (phi * phi);
+}
+
+// The bridge to L-functions
+// c_q(n) = Ramanujan sum
+// c_q(p) = μ(q) for primes p with (p,q)=1
+// Dirichlet characters decompose c_q
+```
+
+### Brennpunkt Theory (Task #3 Complete)
+
+See `BRENNPUNKT_THEORY.md` for full theory.
+
+**Key insight:**
+- t = 1/4 (primes): geometric mean = scale-invariance
+- t = 1/3 (composites): weighted mean = 2-factor asymmetry
+- t = 2/7 (optimal laser): harmonic mean of Brennpunkte
+
+**Add to v4:** Brennpunkt Interpretation Panel
+- Show: why this t for this class
+- Theory: symmetry/asymmetry explanation
+- Test: k-almost primes should have t → 1/(k+1)?

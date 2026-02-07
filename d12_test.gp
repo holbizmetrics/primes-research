@@ -1,0 +1,1 @@
+{d=12;g1=0;g2=0;g3=0;g4=0;prev=2;found=0;cnt=0;forprime(p=3,prime(10^7),g4=g3;g3=g2;g2=g1;g1=p-prev;cnt++;if(g4>0&&g2-g1==d&&g3-g2==d&&g4-g3==d,found++;print("L4+ p=",p," [",g1,",",g2,",",g3,",",g4,"]"));if(g4>0&&g2-g1==-d&&g3-g2==-d&&g4-g3==-d,found++;print("L4- p=",p," [",g1,",",g2,",",g3,",",g4,"]"));prev=p);print("d=12: Found ",found," L4 in ",cnt)}

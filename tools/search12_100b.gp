@@ -1,0 +1,1 @@
+print("Searching for length-12 gap AP up to 100B..."); cnt=0; forprime(p=5, 100000000000, my(q,g,d,ok); q=vector(12); g=vector(11); q[1]=p; for(i=2,12,q[i]=nextprime(q[i-1]+1)); for(i=1,11,g[i]=q[i+1]-q[i]); d=g[2]-g[1]; ok=1; for(i=2,10,if(g[i+1]-g[i]<>d,ok=0;break)); if(ok, cnt++; print(cnt,": p=",p," d=",d," gaps=",g); if(cnt>=3,break))); print("Total: ",cnt); quit

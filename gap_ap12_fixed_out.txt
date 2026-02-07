@@ -1,0 +1,17 @@
+Gap AP length 12 search
+Starting from 10^9
+0
+1000000007
+0
+  ***   variable name expected: check(p,len)=local(primes,gaps,d,ok);primes=ve
+  ***                                              ^---------------------------
+  ***   syntax error, unexpected end of file, expecting )-> or ',' or ')': 
+  ***   for(i=1,10^6,
+  ***               ^-
+  ***   at top-level: if(check(p,12),found=found+1)
+  ***                    ^--------------------------
+  ***   not a function in function call
+Checked i primes, at p=1000000009
+  ***   syntax error, unexpected ')', expecting end of file: )
+  ***                                                        ^-
+Done. Found: 0

@@ -1,0 +1,68 @@
+============================================================
+Lattice-based Factorization (Fast Version)
+============================================================
+
+--- Lattice Geometry Analysis ---
+  4-bit system:
+    Variables (y[i][j]): 16
+    Constraints (onesFromPP): 7
+    Underdetermined by: 9
+    Expected binary solutions: ~512
+    Rank-1 constraint (y = p⊗q) reduces to 2*bits = 8 unknowns
+
+  6-bit system:
+    Variables (y[i][j]): 36
+    Constraints (onesFromPP): 11
+    Underdetermined by: 25
+    Expected binary solutions: ~33554432
+    Rank-1 constraint (y = p⊗q) reduces to 2*bits = 12 unknowns
+
+  8-bit system:
+    Variables (y[i][j]): 64
+    Constraints (onesFromPP): 15
+    Underdetermined by: 49
+    Expected binary solutions: ~562949953421312
+    Rank-1 constraint (y = p⊗q) reduces to 2*bits = 16 unknowns
+
+--- CVP Enumeration Approach ---
+  6-bit:
+    Exact onesFromPP:     20/20 (100%)
+    Noisy (ML sim):       20/20 (100%)
+    Weighted CVP:         20/20 (100%)
+
+  8-bit:
+    Exact onesFromPP:     20/20 (100%)
+    Noisy (ML sim):       20/20 (100%)
+    Weighted CVP:         20/20 (100%)
+
+  10-bit:
+    Exact onesFromPP:     10/10 (100%)
+    Noisy (ML sim):       10/10 (100%)
+    Weighted CVP:         10/10 (100%)
+
+--- Lattice Structure Example ---
+p=7 (binary: 0b111), q=11 (binary: 0b1011)
+N = 77
+onesFromPP = [1, 2, 2, 2, 1, 1, 0]
+
+Linearized y[i][j] = p[i] * q[j] matrix:
+      q0 q1 q2 q3
+  p0: [1, 1, 0, 1]
+  p1: [1, 1, 0, 1]
+  p2: [1, 1, 0, 1]
+  p3: [0, 0, 0, 0]
+
+Diagonal sums of Y give onesFromPP:
+  k=0: y[0][0]=1 = 1
+  k=1: y[0][1]=1 + y[1][0]=1 = 2
+  k=2: y[0][2]=0 + y[1][1]=1 + y[2][0]=1 = 2
+  k=3: y[0][3]=1 + y[1][2]=0 + y[2][1]=1 + y[3][0]=0 = 2
+  k=4: y[1][3]=1 + y[2][2]=0 + y[3][1]=0 = 1
+  k=5: y[2][3]=1 + y[3][2]=0 = 1
+  k=6: y[3][3]=0 = 0
+
+Key insight: Y has RANK 1 (outer product structure)
+This is the additional constraint beyond onesFromPP values!
+
+The factorization problem = finding rank-1 binary matrix
+with prescribed diagonal sums

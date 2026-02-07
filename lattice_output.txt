@@ -1,0 +1,35 @@
+============================================================
+Lattice-based Factorization via onesFromPP
+============================================================
+
+--- LLL Reduction Approach ---
+  4-bit: 0/20 (0%)
+  5-bit: 0/20 (0%)
+  6-bit: 0/20 (0%)
+
+--- CVP Enumeration Approach ---
+  4-bit exact: 20/20
+  4-bit noisy: 20/20
+  5-bit exact: 20/20
+  5-bit noisy: 20/20
+
+--- Lattice Structure Example ---
+p=7 (binary: 0b111), q=11 (binary: 0b1011)
+N = 77
+onesFromPP = [1, 2, 2, 2, 1, 1, 0]
+
+Linearized variables y[i][j] = p[i] * q[j]:
+      q0 q1 q2 q3
+  p0: [1, 1, 0, 1]
+  p1: [1, 1, 0, 1]
+  p2: [1, 1, 0, 1]
+  p3: [0, 0, 0, 0]
+
+Constraint structure (diagonal sums = onesFromPP):
+  k=0: y[0][0] = ones[0]
+  k=1: y[0][1] + y[1][0] = ones[1]
+  k=2: y[0][2] + y[1][1] + y[2][0] = ones[2]
+  ...
+
+The lattice encodes: find y[i][j] ∈ {0,1} satisfying constraints
+LLL finds short vectors → binary solutions are short!

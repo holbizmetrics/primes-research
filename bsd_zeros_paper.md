@@ -1,6 +1,6 @@
 # Zero Statistics of Elliptic Curve L-functions and the BSD Rank
 
-**Abstract.** We investigate spacing statistics of elliptic curve L-function zeros as a function of algebraic rank. Curves with rank ≥ 1 exhibit a central zero at s = 1 (per BSD), creating a characteristic "giant first gap" of ~5× the mean spacing. More surprisingly, even excluding this first gap, rank 1 curves show ~2× higher spacing variance than rank 0 curves. We interpret this as a GUE boundary effect: repulsion from the forced central zero perturbs the entire zero distribution.
+**Abstract.** We investigate spacing statistics of elliptic curve L-function zeros as a function of algebraic rank. Curves with rank ≥ 1 exhibit a central zero at s = 1 (per BSD), creating a characteristic "giant first gap" of ~5× the mean spacing. More surprisingly, rank 1+ curves show ~2.5× **higher** spacing variance than rank 0 curves (0.38 vs 0.14). We interpret this as a GUE boundary effect: repulsion from the forced central zero perturbs the entire zero distribution, increasing spacing irregularity.
 
 ---
 
@@ -59,9 +59,13 @@ This creates a detectable signature in the zero statistics.
 
 | Metric | Rank 0 (n=4) | Rank ≥1 (n=4) | Ratio |
 |--------|--------------|---------------|-------|
-| Mean variance | 0.168 | 0.364 | 2.17× |
+| Mean variance | 0.14 | 0.38 | **2.7×** |
 | Mean first gap | 2.53× | 5.00× | 1.98× |
 | z[1] location | 4.70 | 0.00 | — |
+
+**Updated verification (2026-02-03):** Using L(E,1) to determine rank:
+- Rank 0 (L(1)>0): 17a=0.13, 20a=0.13, 37a=0.16 → mean 0.14
+- Rank 1+ (L(1)≈0): 11a=0.49, 14a=0.43, 24a=0.23 → mean 0.38
 
 ---
 

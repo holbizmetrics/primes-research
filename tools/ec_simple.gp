@@ -1,0 +1,16 @@
+svar(z)={my(s,m,n);s=vector(#z-1,i,z[i+1]-z[i]);m=vecsum(s)/#s;n=vector(#s,i,s[i]/m);vecsum(vector(#n,i,(n[i]-1)^2))/#n}
+print("EC Test - Rank 0")
+E1=ellinit([0,-1,1,-10,-20])
+z1=lfunzeros(lfuncreate(E1),60)
+print("11a1: zeros=",#z1," var=",svar(z1)," L(1)=",lfun(lfuncreate(E1),1))
+E2=ellinit([0,0,0,-1,0])
+z2=lfunzeros(lfuncreate(E2),60)
+print("32a1: zeros=",#z2," var=",svar(z2)," L(1)=",lfun(lfuncreate(E2),1))
+print("EC Test - Rank 1")
+E3=ellinit([0,0,1,-1,0])
+z3=lfunzeros(lfuncreate(E3),60)
+print("37a1: zeros=",#z3," var=",svar(z3)," L(1)=",lfun(lfuncreate(E3),1))
+E4=ellinit([0,1,1,-2,0])
+z4=lfunzeros(lfuncreate(E4),60)
+print("389a1: zeros=",#z4," var=",svar(z4)," L(1)=",lfun(lfuncreate(E4),1))
+quit

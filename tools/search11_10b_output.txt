@@ -1,0 +1,3 @@
+Searching for length-11 gap AP up to 10B...
+1: p=245333213 d=-2 gaps=[20,18,16,14,12,10,8,6,4,2]
+Total: 1

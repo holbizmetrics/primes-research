@@ -1,0 +1,3669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Prime Explorer — FRONTIER Edition</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #000;
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .app {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            min-height: 100vh;
+        }
+        
+        @media (max-width: 1400px) {
+            .app { grid-template-columns: 280px 1fr 260px; }
+        }
+        
+        @media (max-width: 1100px) {
+            .app { grid-template-columns: 260px 1fr; }
+            .right-panel { display: none; }
+        }
+        
+        .left-panel, .right-panel {
+            background: rgba(15, 15, 25, 0.98);
+            padding: 15px;
+            overflow-y: auto;
+            border-right: 1px solid #333;
+        }
+        
+        .right-panel { border-right: none; border-left: 1px solid #333; }
+        
+        h1 {
+            font-size: 1.15rem;
+            margin-bottom: 3px;
+            background: linear-gradient(90deg, #ff6b6b, #ffd93d, #4ecdc4, #9d4edd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle { color: #555; font-size: 0.7rem; margin-bottom: 12px; }
+        
+        .section {
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        
+        .section h3 {
+            font-size: 0.65rem;
+            color: #4ecdc4;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .section.collapsed .section-content { display: none; }
+        .section h3 { cursor: pointer; }
+        .section h3::before { content: '▼'; font-size: 0.5rem; transition: transform 0.2s; }
+        .section.collapsed h3::before { transform: rotate(-90deg); }
+        
+        .control { margin-bottom: 8px; }
+        
+        .control label {
+            display: block;
+            font-size: 0.65rem;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        
+        select, input[type="range"], input[type="number"] {
+            width: 100%;
+            background: #1a1a2e;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%234ecdc4' d='M2 3l3 4 3-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            padding-right: 25px;
+        }
+        
+        select:hover, input:hover { border-color: #4ecdc4; }
+        select option { background: #1a1a2e; padding: 8px; }
+        
+        .range-value { font-size: 0.7rem; color: #4ecdc4; float: right; }
+        
+        .canvas-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at center, #080812 0%, #000 100%);
+        }
+        
+        canvas { display: block; cursor: grab; }
+        canvas:active { cursor: grabbing; }
+        
+        .btn {
+            background: rgba(78,205,196,0.15);
+            border: 1px solid rgba(78,205,196,0.4);
+            color: #4ecdc4;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            margin: 2px;
+            transition: all 0.15s;
+        }
+        
+        .btn:hover { background: rgba(78,205,196,0.3); }
+        .btn.active { background: #4ecdc4; color: #000; }
+        
+        .btn-row { display: flex; flex-wrap: wrap; gap: 3px; }
+        
+        .prime-btn {
+            min-width: 28px;
+            padding: 4px 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .btn.collapse-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+            border: none;
+            color: #fff;
+            font-weight: bold;
+            width: 100%;
+            padding: 8px;
+            margin-top: 6px;
+        }
+        .btn.collapse-btn:hover { box-shadow: 0 2px 12px rgba(255,107,107,0.4); }
+        .btn.collapse-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        
+        .search-row { display: flex; gap: 4px; }
+        .search-row input { flex: 1; }
+        .search-row button {
+            padding: 6px 12px;
+            background: #4ecdc4;
+            border: none;
+            border-radius: 4px;
+            color: #000;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.75rem;
+        }
+        
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.68rem;
+            cursor: pointer;
+            padding: 3px;
+            border-radius: 3px;
+            transition: background 0.15s;
+        }
+        
+        .checkbox-item:hover { background: rgba(255,255,255,0.05); }
+        .checkbox-item input { width: 12px; height: 12px; cursor: pointer; }
+        .color-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        
+        .result-box {
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(255,217,61,0.08);
+            border: 1px solid rgba(255,217,61,0.25);
+            border-radius: 5px;
+            font-size: 0.75rem;
+            display: none;
+        }
+        
+        .result-box.visible { display: block; }
+        .result-box h4 { color: #ffd93d; margin-bottom: 5px; font-size: 0.8rem; }
+        
+        .factor-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+        .factor-chip {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .surface-info {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(0,0,0,0.85);
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            max-width: 240px;
+            border: 1px solid #4ecdc4;
+        }
+        
+        .surface-info h4 { color: #4ecdc4; margin-bottom: 4px; font-size: 0.8rem; }
+        .surface-info p { color: #999; line-height: 1.3; }
+        
+        .hover-info {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.9);
+            padding: 10px 12px;
+            border-radius: 6px;
+            display: none;
+            border: 1px solid #4ecdc4;
+            font-size: 0.75rem;
+        }
+        
+        .hover-info.visible { display: flex; gap: 15px; align-items: center; }
+        .hover-number { font-size: 1.5rem; font-weight: bold; }
+        .hover-details { flex: 1; }
+        .hover-color { width: 40px; height: 40px; border-radius: 6px; border: 2px solid #fff; }
+        
+        .stats-bar {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.8);
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .stat { text-align: center; }
+        .stat-value { color: #4ecdc4; font-weight: bold; font-size: 0.9rem; }
+        .stat-label { color: #666; }
+        
+        .collapse-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95);
+            border: 2px solid #ffd93d;
+            border-radius: 10px;
+            padding: 20px 35px;
+            text-align: center;
+            display: none;
+            z-index: 100;
+        }
+        
+        .collapse-overlay.visible { display: block; }
+        .collapse-overlay h2 { font-size: 1.5rem; color: #ffd93d; margin-bottom: 6px; }
+        .collapse-overlay .factors { font-size: 1.2rem; color: #fff; }
+        .collapse-overlay .factors span {
+            padding: 3px 10px;
+            border-radius: 5px;
+            margin: 0 3px;
+            display: inline-block;
+        }
+        
+        .insight-box {
+            background: linear-gradient(135deg, rgba(157,78,221,0.1), rgba(78,205,196,0.1));
+            border: 1px solid rgba(157,78,221,0.3);
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 0.7rem;
+        }
+        
+        .insight-box h4 { color: #9d4edd; margin-bottom: 5px; font-size: 0.75rem; }
+        .insight-box p { line-height: 1.4; color: #aaa; }
+        
+        .test-row {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            margin-top: 6px;
+        }
+        
+        .test-row input {
+            width: 60px;
+            text-align: center;
+        }
+        
+        .test-result {
+            margin-top: 6px;
+            padding: 6px;
+            background: rgba(78,205,196,0.1);
+            border-radius: 4px;
+            font-size: 0.7rem;
+            display: none;
+        }
+        
+        .test-result.visible { display: block; }
+        
+        /* FRONTIER EDITION - New Styles */
+        .section.frontier { border-color: rgba(157,78,221,0.4); background: rgba(157,78,221,0.05); }
+        .section.frontier h3 { color: #9d4edd; }
+        
+        .btn.frontier-btn { background: rgba(157,78,221,0.2); border-color: rgba(157,78,221,0.5); color: #9d4edd; }
+        .btn.frontier-btn:hover { background: rgba(157,78,221,0.4); }
+        .btn.frontier-btn.active { background: #9d4edd; color: #000; }
+        
+        .btn.tree-btn { background: linear-gradient(135deg, #9d4edd, #7b2cbf); border: none; color: #fff; font-weight: bold; width: 100%; padding: 8px; margin-top: 6px; }
+        .btn.tree-btn:hover { box-shadow: 0 2px 12px rgba(157,78,221,0.4); }
+        .btn.tree-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        
+        .mult-result { margin-top: 8px; padding: 10px; background: rgba(157,78,221,0.1); border: 1px solid rgba(157,78,221,0.3); border-radius: 6px; font-size: 0.68rem; display: none; font-family: 'Consolas', monospace; }
+        .mult-result.visible { display: block; }
+        .mult-result .coord { color: #4ecdc4; }
+        .mult-result .error { color: #ff6b6b; font-weight: bold; }
+        .mult-result .good { color: #00ff88; }
+        .mult-result .label { color: #888; }
+        
+        .tree-path { margin-top: 8px; padding: 8px; background: rgba(157,78,221,0.08); border: 1px solid rgba(157,78,221,0.25); border-radius: 5px; font-size: 0.7rem; display: none; max-height: 150px; overflow-y: auto; }
+        .tree-path.visible { display: block; }
+        .tree-step { padding: 2px 0; border-left: 2px solid #9d4edd; padding-left: 8px; margin-left: 4px; margin-bottom: 2px; }
+        
+        .rank-indicator { display: inline-block; padding: 2px 6px; border-radius: 10px; font-size: 0.6rem; font-weight: bold; margin-left: 6px; }
+        .rank-top { background: #00ff88; color: #000; }
+        .rank-good { background: #ffd93d; color: #000; }
+        .rank-avg { background: #4ecdc4; color: #000; }
+        .rank-poor { background: #ff6b6b; color: #fff; }
+        
+        /* Topology Analysis styles */
+        .topology-result { margin-top: 10px; padding: 10px; background: rgba(157,78,221,0.1); border: 1px solid rgba(157,78,221,0.3); border-radius: 6px; font-size: 0.68rem; display: none; }
+        .topology-result.visible { display: block; }
+        .topo-section { margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(157,78,221,0.2); }
+        .topo-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .topo-title { color: #9d4edd; font-weight: bold; margin-bottom: 4px; }
+        .topo-bar { height: 8px; border-radius: 4px; margin: 3px 0; }
+        .topo-compare { display: flex; gap: 10px; margin-top: 6px; }
+        .topo-compare > div { flex: 1; text-align: center; padding: 6px; border-radius: 4px; }
+        .topo-prime { background: rgba(255,107,107,0.2); border: 1px solid rgba(255,107,107,0.4); }
+        .topo-composite { background: rgba(100,100,140,0.2); border: 1px solid rgba(100,100,140,0.4); }
+        .topo-value { font-size: 1.1rem; font-weight: bold; }
+        .topo-label { font-size: 0.6rem; color: #888; }
+        .hub-high { color: #00ff88; }
+        .hub-med { color: #ffd93d; }
+        .hub-low { color: #4ecdc4; }
+        
+        /* Batch analysis results */
+        .batch-result { margin-top: 10px; padding: 10px; background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.3); border-radius: 6px; font-size: 0.65rem; display: none; max-height: 300px; overflow-y: auto; }
+        .batch-result.visible { display: block; }
+        .batch-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .batch-row:last-child { border-bottom: none; }
+        .batch-config { color: #4ecdc4; }
+        .batch-ratio { font-weight: bold; }
+        .batch-ratio.high { color: #ff6b6b; }
+        .batch-ratio.neutral { color: #ffd93d; }
+        .batch-ratio.low { color: #00ff88; }
+        .batch-top10 { color: #888; font-size: 0.6rem; }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="left-panel">
+            <h1>🌌 Ultimate Prime Explorer</h1>
+            <p class="subtitle">FRONTIER Edition — Holger Morlok</p>
+            
+            <!-- SURFACE GEOMETRY -->
+            <div class="section">
+                <h3 onclick="toggleSection(this)">🌐 Surface Geometry</h3>
+                <div class="section-content">
+                    <div class="control">
+                        <label>Surface Type</label>
+                        <select id="surfaceType">
+                            <optgroup label="Classic">
+                                <option value="sphere">Sphere</option>
+                                <option value="torus">🍩 Torus</option>
+                                <option value="cylinder">Cylinder</option>
+                            </optgroup>
+                            <optgroup label="🧬 Helical (Test These!)">
+                                <option value="singlehelix">🌀 Single Helix</option>
+                                <option value="doublehelix">🧬 Double Helix</option>
+                                <option value="triplehelix">🧬³ Triple Helix</option>
+                                <option value="conicalhelix">🔺🌀 Conical Helix</option>
+                                <option value="spiraltorus">🍩🌀 Spiral Torus</option>
+                            </optgroup>
+                            <optgroup label="Platonic Solids">
+                                <option value="tetrahedron">Tetrahedron</option>
+                                <option value="cube">Cube</option>
+                                <option value="octahedron">Octahedron</option>
+                                <option value="icosahedron">Icosahedron</option>
+                                <option value="dodecahedron">Dodecahedron</option>
+                            </optgroup>
+                            <optgroup label="Exotic">
+                                <option value="mobius">Möbius Strip</option>
+                                <option value="klein">Klein Bottle</option>
+                                <option value="trefoil">Trefoil Knot</option>
+                                <option value="lissajous">∞ Lissajous</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="control">
+                        <label>Mapping</label>
+                        <select id="mappingMethod">
+                            <optgroup label="Classic">
+                                <option value="spiral">Golden Spiral</option>
+                                <option value="modular6">Modular (mod 6)</option>
+                                <option value="modular30">Modular (mod 30)</option>
+                                <option value="log">Logarithmic</option>
+                                <option value="primeStrand">Prime/Composite Strands</option>
+                            </optgroup>
+                            <optgroup label="🔬 Factor-Revealing">
+                                <option value="crtTorus">CRT Residue (210×143)</option>
+                                <option value="valuation3D">Valuation (v₂,v₃,v₅)</option>
+                                <option value="logPhase">Log Phase (mult→add)</option>
+                                <option value="logHelix">Log Helix (best for mult!)</option>
+                                <option value="spfBands">SPF Bands</option>
+                                <option value="smoothness">Smoothness Clusters</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="control">
+                        <label>Max N: <span class="range-value" id="rangeValue">5000</span></label>
+                        <input type="range" id="maxN" min="500" max="15000" value="5000" step="500">
+                    </div>
+                    <div class="control">
+                        <label>Point Size: <span class="range-value" id="sizeValue">3</span></label>
+                        <input type="range" id="pointSize" min="1" max="8" value="3" step="0.5">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SPECIAL PRIME TYPES -->
+            <div class="section">
+                <h3 onclick="toggleSection(this)">⭐ Special Prime Types</h3>
+                <div class="section-content">
+                    <div class="checkbox-grid">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showRegular" checked>
+                            <span class="color-dot" style="background:#ff6b6b"></span>
+                            Regular
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showTwin" checked>
+                            <span class="color-dot" style="background:#ffd93d"></span>
+                            Twin (p,p+2)
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showSophie" checked>
+                            <span class="color-dot" style="background:#4ecdc4"></span>
+                            Sophie Germain
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showMersenne" checked>
+                            <span class="color-dot" style="background:#9d4edd"></span>
+                            Mersenne
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showSupersingular" checked>
+                            <span class="color-dot" style="background:#00ff88"></span>
+                            Supersingular
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showSafe" checked>
+                            <span class="color-dot" style="background:#ff66b2"></span>
+                            Safe Primes
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- COLOR & DISPLAY -->
+            <div class="section">
+                <h3 onclick="toggleSection(this)">🎨 Color & Display</h3>
+                <div class="section-content">
+                    <div class="control">
+                        <label>Color Mode</label>
+                        <select id="colorMode">
+                            <optgroup label="Classic">
+                                <option value="type">By Prime Type</option>
+                                <option value="factor3">By Factors (2,3,5)</option>
+                                <option value="primeIndex">Prime Index Hue</option>
+                                <option value="modular">Modular Rainbow</option>
+                            </optgroup>
+                            <optgroup label="🔬 Factor-Revealing">
+                                <option value="smoothnessColor">Smoothness (bright=smooth)</option>
+                                <option value="omegaColor">Omega (# of factors)</option>
+                                <option value="spfColor">Smallest Prime Factor</option>
+                                <option value="residueColor">Residue mod 210</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn active" id="btnPrimes">Primes</button>
+                        <button class="btn" id="btnSemiprimes">Semiprimes</button>
+                        <button class="btn" id="btnComposites">All</button>
+                        <button class="btn" id="btnWireframe">Wire</button>
+                        <button class="btn active" id="btnRotate">Spin</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- HELIX FILTER -->
+            <div class="section">
+                <h3 onclick="toggleSection(this)">🔢 Helix Filter (Divisibility)</h3>
+                <div class="section-content">
+                    <div class="btn-row">
+                        <button class="btn prime-btn" data-prime="2">2</button>
+                        <button class="btn prime-btn" data-prime="3">3</button>
+                        <button class="btn prime-btn" data-prime="5">5</button>
+                        <button class="btn prime-btn" data-prime="7">7</button>
+                        <button class="btn prime-btn" data-prime="11">11</button>
+                        <button class="btn prime-btn" data-prime="13">13</button>
+                        <button class="btn prime-btn" data-prime="17">17</button>
+                        <button class="btn prime-btn" data-prime="19">19</button>
+                    </div>
+                    <button class="btn" id="clearFilter" style="width:100%;margin-top:6px;">Clear Filter</button>
+                    <div style="font-size:0.65rem;color:#666;margin-top:4px;" id="filterStatus">No filter — showing all</div>
+                </div>
+            </div>
+            
+            <!-- FACTOR FINDER & COLLAPSE -->
+            <div class="section" style="border-color: rgba(255,107,107,0.3);">
+                <h3 onclick="toggleSection(this)" style="color:#ff6b6b;">⚡ Factor Finder & Collapse</h3>
+                <div class="section-content">
+                    <div class="search-row">
+                        <input type="number" id="searchN" placeholder="Enter n...">
+                        <button id="searchBtn">Find</button>
+                    </div>
+                    <button class="btn collapse-btn" id="collapseBtn" disabled>⚡ COLLAPSE TO FACTORS</button>
+                    
+                    <div class="result-box" id="factorResult">
+                        <h4>n = <span id="resultN"></span></h4>
+                        <div id="resultType"></div>
+                        <div class="factor-chips" id="resultFactors"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- NEW: TOPOLOGY ANALYSIS -->
+            <div class="section frontier">
+                <h3 onclick="toggleSection(this)">🔬 Topology Analysis</h3>
+                <div class="section-content">
+                    <div style="font-size:0.65rem;color:#888;margin-bottom:6px;">
+                        Measure structural importance of positions
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn frontier-btn" id="analyzeTopologyBtn">Analyze</button>
+                        <button class="btn frontier-btn" id="colorByHubBtn">Color by Hub</button>
+                    </div>
+                    <div class="btn-row" style="margin-top:4px;">
+                        <button class="btn frontier-btn" id="batchAnalysisBtn">🧪 Test All Configs</button>
+                    </div>
+                    <div class="control" style="margin-top:8px;">
+                        <label>Neighbor Radius: <span class="range-value" id="radiusValue">0.15</span></label>
+                        <input type="range" id="hubRadius" min="0.05" max="0.4" value="0.15" step="0.01">
+                    </div>
+                    <div class="topology-result" id="topologyResult">
+                        <div class="topo-section">
+                            <div class="topo-title">📊 Hub Score Distribution</div>
+                            <div id="hubStats"></div>
+                        </div>
+                        <div class="topo-section">
+                            <div class="topo-title">🎯 Prime vs Composite</div>
+                            <div id="primeVsComposite"></div>
+                        </div>
+                        <div class="topo-section">
+                            <div class="topo-title">🏆 Top Hub Positions</div>
+                            <div id="topHubs"></div>
+                        </div>
+                    </div>
+                    <div class="batch-result" id="batchResult"></div>
+                </div>
+            </div>
+            
+            <!-- NEW: HYPOTHESIS VALIDATION SUITE -->
+            <div class="section frontier">
+                <h3 onclick="toggleSection(this)">🧪 Hypothesis Validator</h3>
+                <div class="section-content">
+                    <div style="font-size:0.65rem;color:#888;margin-bottom:6px;">
+                        Falsification engine — test if patterns are real
+                    </div>
+                    <div class="control" style="margin-bottom:8px;">
+                        <label style="font-size:0.65rem;">Top K Hubs to Test</label>
+                        <select id="validationTopK" style="width:100%;padding:4px;background:#1a1a2e;color:#fff;border:1px solid #ff6b6b;border-radius:4px;">
+                            <option value="10">Top 10</option>
+                            <option value="20">Top 20</option>
+                            <option value="50">Top 50</option>
+                            <option value="100">Top 100 (10%)</option>
+                        </select>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn frontier-btn" id="baseRateBtn" style="border-color:#ff6b6b;">📊 Base Rate</button>
+                        <button class="btn frontier-btn" id="permTestBtn" style="border-color:#ff6b6b;">🎲 Permutation</button>
+                    </div>
+                    <div class="btn-row" style="margin-top:4px;">
+                        <button class="btn frontier-btn" id="nScaleBtn" style="border-color:#ff6b6b;">📈 N-Scaling</button>
+                        <button class="btn frontier-btn" id="radiusTestBtn" style="border-color:#ff6b6b;">⭕ Radius Test</button>
+                    </div>
+                    <div class="btn-row" style="margin-top:8px;">
+                        <button class="btn frontier-btn" id="fullValidationBtn" style="border-color:#ff6b6b;background:rgba(255,107,107,0.2);width:100%;">🔬 RUN FULL VALIDATION</button>
+                    </div>
+                    <div class="validation-result" id="validationResult" style="margin-top:8px;padding:8px;background:rgba(0,0,0,0.3);border-radius:4px;font-size:0.65rem;max-height:300px;overflow-y:auto;display:none;">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- NEW: MULTIPLICATION LAB -->
+            <div class="section frontier">
+                <h3 onclick="toggleSection(this)">🧪 Multiplication Lab</h3>
+                <div class="section-content">
+                    <div style="font-size:0.65rem;color:#888;margin-bottom:6px;">
+                        Test: Φ(p×q) vs Φ(p) + Φ(q)
+                    </div>
+                    
+                    <!-- NEW: Feature Mode Selector -->
+                    <div class="control" style="margin-bottom:8px;">
+                        <label style="font-size:0.65rem;">Feature Mode</label>
+                        <select id="featureMode" style="width:100%;padding:4px;background:#1a1a2e;color:#fff;border:1px solid #4ecdc4;border-radius:4px;">
+                            <option value="position">Position (Pos xyz)</option>
+                            <option value="log">Log (exact for mult!)</option>
+                            <option value="valuation">Valuation v₂,v₃,v₅ (exact!)</option>
+                            <option value="mixed">Mixed (log+val+res)</option>
+                            <option value="residue">Residue (mod 7,11,13)</option>
+                            <option value="residueZero">Residue Zero-Dist (factor detect!)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="test-row">
+                        <input type="number" id="multP" placeholder="p" min="2">
+                        <span style="color:#9d4edd;font-weight:bold;">×</span>
+                        <input type="number" id="multQ" placeholder="q" min="2">
+                        <button class="btn frontier-btn" id="multBtn">Multiply</button>
+                    </div>
+                    <div class="btn-row" style="margin-top:6px;">
+                        <button class="btn frontier-btn" id="showVectorBtn">Show Vector</button>
+                        <button class="btn frontier-btn" id="findMinErrorBtn">Find Min Error</button>
+                    </div>
+                    <div class="mult-result" id="multResult">
+                        <div><span class="label" id="labelP">Φ(p):</span> <span class="coord" id="posP"></span></div>
+                        <div><span class="label" id="labelQ">Φ(q):</span> <span class="coord" id="posQ"></span></div>
+                        <div><span class="label" id="labelSum">Φ(p)+Φ(q):</span> <span class="coord" id="posSum"></span></div>
+                        <div><span class="label" id="labelPQ">Φ(p×q):</span> <span class="coord" id="posPQ"></span></div>
+                        <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(157,78,221,0.3);">
+                            <span class="label">Error Δ:</span> <span id="errorDelta"></span>
+                            <span id="errorRank"></span>
+                        </div>
+                    </div>
+                    <div class="mult-result" id="minErrorResult"></div>
+                    
+                    <!-- NEW: Feature explanation -->
+                    <div id="featureExplain" style="font-size:0.6rem;color:#666;margin-top:8px;padding:6px;background:rgba(0,0,0,0.2);border-radius:4px;">
+                        <strong>Position:</strong> Tests if geometric position is additive under multiplication.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- NEW: FACTOR TREE DESCENT -->
+            <div class="section frontier">
+                <h3 onclick="toggleSection(this)">🌳 Factor Tree Descent</h3>
+                <div class="section-content">
+                    <div style="font-size:0.65rem;color:#888;margin-bottom:6px;">
+                        Animated path from n → prime factors
+                    </div>
+                    <div class="search-row">
+                        <input type="number" id="treeN" placeholder="Enter n..." min="4">
+                        <button class="btn frontier-btn" id="treeBtn">Build Tree</button>
+                    </div>
+                    <button class="btn tree-btn" id="animateTreeBtn" disabled>🌳 ANIMATE DESCENT</button>
+                    <div class="tree-path" id="treePath"></div>
+                </div>
+            </div>
+            
+            <!-- ADDITIVE TEST (Legacy) -->
+            <div class="section collapsed">
+                <h3 onclick="toggleSection(this)">🔬 Additive Test (Legacy)</h3>
+                <div class="section-content">
+                    <div style="font-size:0.65rem;color:#888;margin-bottom:6px;">
+                        Test if Position(p×q) ≈ Position(p) + Position(q)
+                    </div>
+                    <div class="test-row">
+                        <input type="number" id="testP" placeholder="p">
+                        <span>×</span>
+                        <input type="number" id="testQ" placeholder="q">
+                        <button class="btn" id="testBtn">Test</button>
+                    </div>
+                    <div class="test-result" id="testResult"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="canvas-container">
+            <canvas id="canvas"></canvas>
+            
+            <div class="surface-info" id="surfaceInfo">
+                <h4>Sphere</h4>
+                <p>Golden spiral mapping. Classic visualization of prime distribution.</p>
+            </div>
+            
+            <div class="stats-bar">
+                <div class="stat">
+                    <div class="stat-value" id="statTotal">0</div>
+                    <div class="stat-label">Points</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="statPrimes">0</div>
+                    <div class="stat-label">Primes</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="statSpecial">0</div>
+                    <div class="stat-label">Special</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="zoomLevel">1.0x</div>
+                    <div class="stat-label">Zoom 🔍</div>
+                </div>
+            </div>
+            
+            <!-- NEW: View Controls Overlay -->
+            <div class="view-controls" style="position:absolute;top:12px;right:200px;display:flex;gap:4px;">
+                <button class="btn" id="zoomInBtn" title="Zoom In (or scroll)">➕</button>
+                <button class="btn" id="zoomOutBtn" title="Zoom Out (or scroll)">➖</button>
+                <button class="btn" id="centerViewBtn" title="Center View">⊙</button>
+                <button class="btn" id="resetViewBtn" title="Reset All">🔄</button>
+                <button class="btn active" id="spinToggleBtn" title="Toggle Spin">🔁</button>
+            </div>
+            
+            <div class="hover-info" id="hoverInfo">
+                <div class="hover-number" id="hoverN">—</div>
+                <div class="hover-details">
+                    <div id="hoverType">—</div>
+                    <div id="hoverFactors">—</div>
+                    <div id="hoverSpecial">—</div>
+                </div>
+                <div class="hover-color" id="hoverColor"></div>
+            </div>
+            
+            <div class="collapse-overlay" id="collapseOverlay">
+                <h2 id="overlayTitle">COLLAPSED!</h2>
+                <div class="factors" id="overlayFactors"></div>
+            </div>
+        </div>
+        
+        <div class="right-panel">
+            <div class="section">
+                <h3>📊 Prime Type Legend</h3>
+                <div class="section-content" style="font-size:0.7rem;">
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                        <span class="color-dot" style="background:#ff6b6b"></span> Regular primes
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                        <span class="color-dot" style="background:#ffd93d"></span> Twin (p and p+2 both prime)
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                        <span class="color-dot" style="background:#4ecdc4"></span> Sophie Germain (2p+1 prime)
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                        <span class="color-dot" style="background:#9d4edd"></span> Mersenne (2ᵖ-1)
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                        <span class="color-dot" style="background:#00ff88"></span> Supersingular
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                        <span class="color-dot" style="background:#ff66b2"></span> Safe (p = 2q+1)
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insight-box">
+                <h4>🧬 Double Helix</h4>
+                <p>DNA-like structure separates primes and composites onto opposite strands. Look for "base pair" relationships!</p>
+            </div>
+            
+            <div class="insight-box">
+                <h4>⚽ Soccer Ball Pattern</h4>
+                <p>The cellular structure persists across ALL color modes — it's in the geometry (golden spiral + icosahedron), not the factor encoding!</p>
+            </div>
+            
+            <div class="insight-box">
+                <h4>🧪 Multiplication Lab</h4>
+                <p>Tests the additive conjecture: if factorization were "linear", Pos(p×q) would equal Pos(p)+Pos(q). The error vector shows the non-linearity!</p>
+            </div>
+            
+            <div class="insight-box">
+                <h4>🌳 Factor Tree</h4>
+                <p>Every composite traces a unique path down to primes. Do similar numbers follow similar paths? The descent reveals hidden structure.</p>
+            </div>
+            
+            <div class="insight-box">
+                <h4>🔬 Supersingular Primes</h4>
+                <p>Only 15 exist: 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 47, 59, 71. They're connected to elliptic curves and the Monster group!</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // CLASS: PrimeMath — Static utility class for prime-related calculations
+    // ═══════════════════════════════════════════════════════════════════════════════
+    class PrimeMath {
+        static PHI = (1 + Math.sqrt(5)) / 2;
+        static GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+        static SUPERSINGULAR = new Set([2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 41, 47, 59, 71]);
+        static MERSENNE = new Set([3, 7, 31, 127, 8191]);
+        
+        static isPrime(n) {
+            if (n < 2) return false;
+            if (n === 2) return true;
+            if (n % 2 === 0) return false;
+            for (let i = 3; i * i <= n; i += 2) if (n % i === 0) return false;
+            return true;
+        }
+        
+        static factorize(n) {
+            const factors = [];
+            let temp = n;
+            for (let p = 2; p * p <= temp; p++) {
+                while (temp % p === 0) { factors.push(p); temp /= p; }
+            }
+            if (temp > 1) factors.push(temp);
+            return factors;
+        }
+        
+        static isSemiprime(n) { return this.factorize(n).length === 2; }
+        static isTwin(p) { return this.isPrime(p) && (this.isPrime(p - 2) || this.isPrime(p + 2)); }
+        static isSophieGermain(p) { return this.isPrime(p) && this.isPrime(2 * p + 1); }
+        static isSafe(p) { return this.isPrime(p) && p > 2 && this.isPrime((p - 1) / 2); }
+        static isMersenne(p) { return this.MERSENNE.has(p); }
+        static isSupersingular(p) { return this.SUPERSINGULAR.has(p); }
+        static primeExponent(n, p) { let e = 0; while (n % p === 0) { e++; n /= p; } return e; }
+        
+        static getPrimeType(n) {
+            if (!this.isPrime(n)) return null;
+            if (this.isSupersingular(n)) return 'supersingular';
+            if (this.isMersenne(n)) return 'mersenne';
+            if (this.isSophieGermain(n)) return 'sophie';
+            if (this.isSafe(n)) return 'safe';
+            if (this.isTwin(n)) return 'twin';
+            return 'regular';
+        }
+        
+        // NEW: Get smallest factor
+        static smallestFactor(n) {
+            if (n < 2) return n;
+            if (n % 2 === 0) return 2;
+            for (let i = 3; i * i <= n; i += 2) if (n % i === 0) return i;
+            return n;
+        }
+        
+        // NEW: Get descent steps for factor tree
+        static getDescentSteps(n) {
+            const steps = [{ n, factors: null, isStart: true }];
+            let current = n;
+            
+            while (!this.isPrime(current) && current > 1) {
+                const sf = this.smallestFactor(current);
+                const remainder = current / sf;
+                steps.push({ 
+                    n: current, 
+                    factors: [sf, remainder],
+                    smallest: sf,
+                    remainder: remainder
+                });
+                current = remainder;
+            }
+            
+            return steps;
+        }
+        
+        // NEW: p-adic valuation v_p(n) = exponent of p in factorization of n
+        static valuation(n, p) {
+            if (n === 0) return Infinity;
+            let v = 0;
+            while (n % p === 0) { v++; n /= p; }
+            return v;
+        }
+        
+        // NEW: Smoothness score - sum of valuations for small primes
+        static smoothness(n, B = 7) {
+            const smallPrimes = [2, 3, 5, 7, 11, 13].filter(p => p <= B);
+            let score = 0;
+            for (const p of smallPrimes) {
+                score += this.valuation(n, p);
+            }
+            return score;
+        }
+        
+        // NEW: Omega function - number of prime factors with multiplicity
+        static omega(n) {
+            if (n < 2) return 0;
+            let count = 0;
+            let temp = n;
+            for (let p = 2; p * p <= temp; p++) {
+                while (temp % p === 0) { count++; temp /= p; }
+            }
+            if (temp > 1) count++; // remaining prime factor
+            return count;
+        }
+        
+        // NEW: Little omega - number of distinct prime factors
+        static littleOmega(n) {
+            if (n < 2) return 0;
+            let count = 0;
+            let temp = n;
+            for (let p = 2; p * p <= temp; p++) {
+                if (temp % p === 0) {
+                    count++;
+                    while (temp % p === 0) temp /= p;
+                }
+            }
+            if (temp > 1) count++;
+            return count;
+        }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // CLASS: Point — Represents a single integer with position and color
+    // ═══════════════════════════════════════════════════════════════════════════════
+    class Point {
+        constructor(n) {
+            this.n = n;
+            this.x = 0; this.y = 0; this.z = 0;
+            this.color = { r: 128, g: 128, b: 128 };
+            this.isPrime = PrimeMath.isPrime(n);
+            this.isSemiprime = PrimeMath.isSemiprime(n);
+            this.primeType = PrimeMath.getPrimeType(n);
+            this.factors = PrimeMath.factorize(n);
+        }
+        
+        setPosition(x, y, z) { this.x = x; this.y = y; this.z = z; }
+        setColor(color) { this.color = color; }
+        
+        get hex() {
+            return '#' + [this.color.r, this.color.g, this.color.b]
+                .map(x => Math.max(0, Math.min(255, Math.floor(x))).toString(16).padStart(2, '0')).join('');
+        }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // SURFACE CLASSES — Each surface type is its own class
+    // ═══════════════════════════════════════════════════════════════════════════════
+    class Surface {
+        constructor(name, desc) { this.name = name; this.description = desc; }
+        mapPoint(t, theta, phi, isPrime) { return { x: 0, y: 0, z: 0 }; }
+        getWireframe() { return []; }
+    }
+    
+    class Sphere extends Surface {
+        constructor() { super('Sphere', 'Golden spiral mapping on S². Classic prime distribution.'); }
+        mapPoint(t, theta, phi) {
+            return { 
+                x: Math.sin(phi) * Math.cos(theta), 
+                y: Math.sin(phi) * Math.sin(theta), 
+                z: Math.cos(phi) 
+            };
+        }
+        getWireframe() {
+            const lines = [];
+            for (let lat = -60; lat <= 60; lat += 30) {
+                const pts = [], p = (90 - lat) * Math.PI / 180;
+                for (let lon = 0; lon <= 360; lon += 10) {
+                    const t = lon * Math.PI / 180;
+                    pts.push({ x: Math.sin(p)*Math.cos(t), y: Math.sin(p)*Math.sin(t), z: Math.cos(p) });
+                }
+                lines.push(pts);
+            }
+            return lines;
+        }
+    }
+    
+    class DoubleHelix extends Surface {
+        constructor() { 
+            super('🧬 Double Helix', 'DNA structure — primes and composites on opposite strands.'); 
+            this.radius = 0.4; 
+        }
+        mapPoint(t, theta, phi, isPrime) {
+            const angle = t * Math.PI * 8 + (isPrime ? 0 : Math.PI);
+            return { 
+                x: this.radius * Math.cos(angle), 
+                y: this.radius * Math.sin(angle), 
+                z: (t - 0.5) * 2 
+            };
+        }
+        getWireframe() {
+            const lines = [];
+            for (let s = 0; s < 2; s++) {
+                const pts = [];
+                for (let i = 0; i <= 100; i++) {
+                    const t = i / 100, angle = t * Math.PI * 8 + s * Math.PI;
+                    pts.push({ x: this.radius * Math.cos(angle), y: this.radius * Math.sin(angle), z: (t - 0.5) * 2 });
+                }
+                lines.push(pts);
+            }
+            return lines;
+        }
+    }
+    
+    // NEW: Single Helix — to test if "double" matters
+    class SingleHelix extends Surface {
+        constructor() { 
+            super('🌀 Single Helix', 'One spiral strand — is "double" required for the effect?'); 
+            this.radius = 0.4; 
+        }
+        mapPoint(t, theta, phi, isPrime) {
+            // Single helix - all points on ONE strand
+            const angle = t * Math.PI * 8;
+            return { 
+                x: this.radius * Math.cos(angle), 
+                y: this.radius * Math.sin(angle), 
+                z: (t - 0.5) * 2 
+            };
+        }
+        getWireframe() {
+            const pts = [];
+            for (let i = 0; i <= 100; i++) {
+                const t = i / 100, angle = t * Math.PI * 8;
+                pts.push({ x: this.radius * Math.cos(angle), y: this.radius * Math.sin(angle), z: (t - 0.5) * 2 });
+            }
+            return [pts];
+        }
+    }
+    
+    // NEW: Triple Helix — more strands = stronger effect?
+    class TripleHelix extends Surface {
+        constructor() { 
+            super('🧬³ Triple Helix', 'Three strands — primes on one, composites on other two.'); 
+            this.radius = 0.4; 
+        }
+        mapPoint(t, theta, phi, isPrime) {
+            // Primes on strand 0, composites alternate strands 1 and 2
+            const strand = isPrime ? 0 : ((Math.round(t * 15000) % 2) + 1);
+            const angle = t * Math.PI * 8 + strand * (2 * Math.PI / 3);
+            return { 
+                x: this.radius * Math.cos(angle), 
+                y: this.radius * Math.sin(angle), 
+                z: (t - 0.5) * 2 
+            };
+        }
+        getWireframe() {
+            const lines = [];
+            for (let s = 0; s < 3; s++) {
+                const pts = [];
+                for (let i = 0; i <= 100; i++) {
+                    const t = i / 100, angle = t * Math.PI * 8 + s * (2 * Math.PI / 3);
+                    pts.push({ x: this.radius * Math.cos(angle), y: this.radius * Math.sin(angle), z: (t - 0.5) * 2 });
+                }
+                lines.push(pts);
+            }
+            return lines;
+        }
+    }
+    
+    // NEW: Conical Helix — helix on a cone
+    class ConicalHelix extends Surface {
+        constructor() { 
+            super('🔺🌀 Conical Helix', 'Spiral on a cone — radius varies with height.'); 
+        }
+        mapPoint(t, theta, phi, isPrime) {
+            const angle = t * Math.PI * 8 + (isPrime ? 0 : Math.PI);
+            const radius = 0.1 + t * 0.5; // Expands as we go up
+            return { 
+                x: radius * Math.cos(angle), 
+                y: radius * Math.sin(angle), 
+                z: (t - 0.5) * 2 
+            };
+        }
+        getWireframe() {
+            const lines = [];
+            for (let s = 0; s < 2; s++) {
+                const pts = [];
+                for (let i = 0; i <= 100; i++) {
+                    const t = i / 100, angle = t * Math.PI * 8 + s * Math.PI;
+                    const radius = 0.1 + t * 0.5;
+                    pts.push({ x: radius * Math.cos(angle), y: radius * Math.sin(angle), z: (t - 0.5) * 2 });
+                }
+                lines.push(pts);
+            }
+            return lines;
+        }
+    }
+    
+    // NEW: Lissajous Curve — interesting 3D figure-8 patterns
+    class Lissajous extends Surface {
+        constructor() { 
+            super('∞ Lissajous', '3D figure-8 curves — harmonic ratios.'); 
+        }
+        mapPoint(t, theta, phi, isPrime) {
+            const tt = t * 2 * Math.PI;
+            const offset = isPrime ? 0 : 0.1;
+            return { 
+                x: Math.sin(3 * tt + offset) * 0.8, 
+                y: Math.sin(4 * tt) * 0.8, 
+                z: Math.sin(5 * tt) * 0.8 
+            };
+        }
+        getWireframe() {
+            const pts = [];
+            for (let i = 0; i <= 200; i++) {
+                const t = i / 200, tt = t * 2 * Math.PI;
+                pts.push({ x: Math.sin(3 * tt) * 0.8, y: Math.sin(4 * tt) * 0.8, z: Math.sin(5 * tt) * 0.8 });
+            }
+            return [pts];
+        }
+    }
+    
+    // NEW: Spiral Torus — helix wrapped around a torus
+    class SpiralTorus extends Surface {
+        constructor() { 
+            super('🍩🌀 Spiral Torus', 'Helix wrapped around donut — double periodicity.'); 
+            this.R = 0.7; this.r = 0.3;
+        }
+        mapPoint(t, theta, phi, isPrime) {
+            // Spiral path around torus
+            const u = t * 8 * Math.PI; // Big loop
+            const v = t * 24 * Math.PI + (isPrime ? 0 : Math.PI); // Small loops
+            return { 
+                x: (this.R + this.r * Math.cos(v)) * Math.cos(u), 
+                y: (this.R + this.r * Math.cos(v)) * Math.sin(u), 
+                z: this.r * Math.sin(v) 
+            };
+        }
+        getWireframe() {
+            const lines = [];
+            for (let s = 0; s < 2; s++) {
+                const pts = [];
+                for (let i = 0; i <= 200; i++) {
+                    const t = i / 200;
+                    const u = t * 8 * Math.PI;
+                    const v = t * 24 * Math.PI + s * Math.PI;
+                    pts.push({ 
+                        x: (this.R + this.r * Math.cos(v)) * Math.cos(u), 
+                        y: (this.R + this.r * Math.cos(v)) * Math.sin(u), 
+                        z: this.r * Math.sin(v) 
+                    });
+                }
+                lines.push(pts);
+            }
+            return lines;
+        }
+    }
+    
+    class Torus extends Surface {
+        constructor() { 
+            super('🍩 Torus', 'Two fundamental loops. Do twin primes follow tracks?'); 
+            this.R = 1; this.r = 0.4; 
+        }
+        mapPoint(t, theta, phi) {
+            const u = theta * 2, v = phi * 2;
+            return { 
+                x: (this.R + this.r * Math.cos(v)) * Math.cos(u), 
+                y: (this.R + this.r * Math.cos(v)) * Math.sin(u), 
+                z: this.r * Math.sin(v) 
+            };
+        }
+        getWireframe() {
+            const lines = [];
+            for (let i = 0; i < 12; i++) {
+                const pts = [], u = i * Math.PI / 6;
+                for (let j = 0; j <= 36; j++) {
+                    const v = j * Math.PI / 18;
+                    pts.push({ 
+                        x: (this.R + this.r * Math.cos(v)) * Math.cos(u), 
+                        y: (this.R + this.r * Math.cos(v)) * Math.sin(u), 
+                        z: this.r * Math.sin(v) 
+                    });
+                }
+                lines.push(pts);
+            }
+            return lines;
+        }
+    }
+    
+    class Cylinder extends Surface {
+        constructor() { super('Cylinder', 'Height = magnitude, angle = spiral.'); }
+        mapPoint(t, theta) { 
+            return { x: Math.cos(theta * 3), y: Math.sin(theta * 3), z: (t - 0.5) * 2 }; 
+        }
+        getWireframe() {
+            const lines = [];
+            // Circles at different heights
+            for (let h = -1; h <= 1; h += 0.5) {
+                const pts = [];
+                for (let a = 0; a <= 360; a += 15) {
+                    const rad = a * Math.PI / 180;
+                    pts.push({ x: Math.cos(rad), y: Math.sin(rad), z: h });
+                }
+                lines.push(pts);
+            }
+            // Vertical lines
+            for (let a = 0; a < 360; a += 45) {
+                const rad = a * Math.PI / 180;
+                lines.push([
+                    { x: Math.cos(rad), y: Math.sin(rad), z: -1 },
+                    { x: Math.cos(rad), y: Math.sin(rad), z: 1 }
+                ]);
+            }
+            return lines;
+        }
+    }
+    
+    class Mobius extends Surface {
+        constructor() { super('Möbius Strip', 'Non-orientable! One side, one edge.'); }
+        mapPoint(t, theta) {
+            const u = t * 2 * Math.PI, v = (theta / Math.PI - 1) * 0.4, hu = u / 2;
+            return { 
+                x: (1 + v * Math.cos(hu)) * Math.cos(u), 
+                y: (1 + v * Math.cos(hu)) * Math.sin(u), 
+                z: v * Math.sin(hu) 
+            };
+        }
+        getWireframe() {
+            const lines = [];
+            // Center line
+            const center = [];
+            for (let i = 0; i <= 50; i++) {
+                const u = (i / 50) * 2 * Math.PI;
+                center.push({ x: Math.cos(u), y: Math.sin(u), z: 0 });
+            }
+            lines.push(center);
+            // Edge lines
+            for (let side of [-0.4, 0.4]) {
+                const edge = [];
+                for (let i = 0; i <= 100; i++) {
+                    const u = (i / 100) * 2 * Math.PI, hu = u / 2;
+                    edge.push({
+                        x: (1 + side * Math.cos(hu)) * Math.cos(u),
+                        y: (1 + side * Math.cos(hu)) * Math.sin(u),
+                        z: side * Math.sin(hu)
+                    });
+                }
+                lines.push(edge);
+            }
+            return lines;
+        }
+    }
+    
+    class Klein extends Surface {
+        constructor() { super('Klein Bottle', 'Non-orientable surface that passes through itself.'); }
+        mapPoint(t, theta) {
+            const u = t * 2 * Math.PI, v = theta;
+            const r = 4 * (1 - Math.cos(u) / 2);
+            let x, y, z;
+            if (u < Math.PI) {
+                x = 6 * Math.cos(u) * (1 + Math.sin(u)) + r * Math.cos(u) * Math.cos(v);
+                y = 16 * Math.sin(u) + r * Math.sin(u) * Math.cos(v);
+            } else {
+                x = 6 * Math.cos(u) * (1 + Math.sin(u)) + r * Math.cos(v + Math.PI);
+                y = 16 * Math.sin(u);
+            }
+            z = r * Math.sin(v);
+            return { x: x * 0.05, y: y * 0.05, z: z * 0.1 };
+        }
+        getWireframe() {
+            const lines = [];
+            // Longitudinal lines
+            for (let vv = 0; vv < Math.PI * 2; vv += Math.PI / 4) {
+                const line = [];
+                for (let i = 0; i <= 50; i++) {
+                    const pt = this.mapPoint(i / 50, vv);
+                    line.push(pt);
+                }
+                lines.push(line);
+            }
+            return lines;
+        }
+    }
+    
+    class Trefoil extends Surface {
+        constructor() { super('Trefoil Knot', 'Simplest non-trivial knot.'); this.scale = 0.5; }
+        mapPoint(t) {
+            const tt = t * 2 * Math.PI;
+            return { 
+                x: this.scale * (Math.sin(tt) + 2 * Math.sin(2 * tt)), 
+                y: this.scale * (Math.cos(tt) - 2 * Math.cos(2 * tt)), 
+                z: this.scale * (-Math.sin(3 * tt)) 
+            };
+        }
+        getWireframe() {
+            const line = [];
+            for (let i = 0; i <= 100; i++) {
+                line.push(this.mapPoint(i / 100));
+            }
+            return [line];
+        }
+    }
+    
+    class Polyhedron extends Surface {
+        constructor(type) {
+            const info = { 
+                tetrahedron: 'Simplest Platonic solid.', 
+                cube: '6 faces, classic.', 
+                octahedron: 'Dual to cube.',
+                icosahedron: 'Soccer ball! 20 faces.', 
+                dodecahedron: '12 pentagons.' 
+            };
+            super(type.charAt(0).toUpperCase() + type.slice(1), info[type] || '');
+            this.type = type;
+            this.vertices = this._getVertices();
+        }
+        
+        _getVertices() {
+            const p = PrimeMath.PHI;
+            switch(this.type) {
+                case 'tetrahedron': 
+                    return [[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]]
+                        .map(v => ({x:v[0]/1.7, y:v[1]/1.7, z:v[2]/1.7}));
+                case 'cube': { 
+                    const c = []; 
+                    for(let x of [-1,1]) for(let y of [-1,1]) for(let z of [-1,1]) 
+                        c.push({x:x/1.7, y:y/1.7, z:z/1.7}); 
+                    return c; 
+                }
+                case 'octahedron': 
+                    return [{x:1,y:0,z:0},{x:-1,y:0,z:0},{x:0,y:1,z:0},{x:0,y:-1,z:0},{x:0,y:0,z:1},{x:0,y:0,z:-1}];
+                case 'icosahedron': { 
+                    const v = [], m = Math.sqrt(1 + 1/(p*p)); 
+                    for(let s1 of [-1,1]) for(let s2 of [-1,1]) {
+                        v.push({x:0, y:s1/p, z:s2});
+                        v.push({x:s1/p, y:s2, z:0});
+                        v.push({x:s2, y:0, z:s1/p});
+                    } 
+                    return v.map(vv => ({x:vv.x/m, y:vv.y/m, z:vv.z/m})); 
+                }
+                case 'dodecahedron': { 
+                    const v = []; 
+                    for(let x of [-1,1]) for(let y of [-1,1]) for(let z of [-1,1]) 
+                        v.push({x, y, z}); 
+                    for(let s1 of [-1,1]) for(let s2 of [-1,1]) {
+                        v.push({x:0, y:s1*p, z:s2/p});
+                        v.push({x:s1/p, y:0, z:s2*p});
+                        v.push({x:s1*p, y:s2/p, z:0});
+                    } 
+                    return v.map(vv => ({x:vv.x/p, y:vv.y/p, z:vv.z/p})); 
+                }
+                default: return [];
+            }
+        }
+        
+        mapPoint(t, theta, phi) {
+            let x = Math.sin(phi) * Math.cos(theta);
+            let y = Math.sin(phi) * Math.sin(theta);
+            let z = Math.cos(phi);
+            
+            if (this.vertices.length > 0) {
+                let nearest = this.vertices[0], minD = Infinity;
+                for (const v of this.vertices) { 
+                    const d = Math.hypot(x-v.x, y-v.y, z-v.z); 
+                    if (d < minD) { minD = d; nearest = v; } 
+                }
+                const b = 0.35; 
+                x = x*(1-b) + nearest.x*b; 
+                y = y*(1-b) + nearest.y*b; 
+                z = z*(1-b) + nearest.z*b;
+            }
+            return { x, y, z };
+        }
+        
+        // NEW: Wireframe for polyhedra - draw edges between vertices
+        getWireframe() {
+            const edges = this._getEdges();
+            return edges.map(([i, j]) => [this.vertices[i], this.vertices[j]]);
+        }
+        
+        _getEdges() {
+            switch(this.type) {
+                case 'tetrahedron':
+                    return [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
+                case 'cube':
+                    // 8 vertices: 0-3 bottom face, 4-7 top face
+                    return [
+                        [0,1],[1,3],[3,2],[2,0], // bottom
+                        [4,5],[5,7],[7,6],[6,4], // top
+                        [0,4],[1,5],[2,6],[3,7]  // sides
+                    ];
+                case 'octahedron':
+                    // 6 vertices: ±x, ±y, ±z
+                    return [
+                        [0,2],[0,3],[0,4],[0,5], // +x connections
+                        [1,2],[1,3],[1,4],[1,5], // -x connections
+                        [2,4],[2,5],[3,4],[3,5]  // equator
+                    ];
+                case 'icosahedron':
+                    // 12 vertices - connect based on golden ratio geometry
+                    const icoEdges = [];
+                    for (let i = 0; i < this.vertices.length; i++) {
+                        for (let j = i + 1; j < this.vertices.length; j++) {
+                            const d = Math.hypot(
+                                this.vertices[i].x - this.vertices[j].x,
+                                this.vertices[i].y - this.vertices[j].y,
+                                this.vertices[i].z - this.vertices[j].z
+                            );
+                            // Edge length for unit icosahedron is ~0.5-0.6
+                            if (d < 0.8) icoEdges.push([i, j]);
+                        }
+                    }
+                    return icoEdges;
+                case 'dodecahedron':
+                    // 20 vertices - connect based on distance
+                    const dodEdges = [];
+                    for (let i = 0; i < this.vertices.length; i++) {
+                        for (let j = i + 1; j < this.vertices.length; j++) {
+                            const d = Math.hypot(
+                                this.vertices[i].x - this.vertices[j].x,
+                                this.vertices[i].y - this.vertices[j].y,
+                                this.vertices[i].z - this.vertices[j].z
+                            );
+                            // Edge length threshold for dodecahedron
+                            if (d < 0.55) dodEdges.push([i, j]);
+                        }
+                    }
+                    return dodEdges;
+                default:
+                    return [];
+            }
+        }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // CLASS: SurfaceFactory — Creates surface instances
+    // ═══════════════════════════════════════════════════════════════════════════════
+    class SurfaceFactory {
+        static create(type) {
+            const map = { 
+                sphere: Sphere, 
+                doublehelix: DoubleHelix,
+                singlehelix: SingleHelix,
+                triplehelix: TripleHelix,
+                conicalhelix: ConicalHelix,
+                torus: Torus, 
+                spiraltorus: SpiralTorus,
+                cylinder: Cylinder, 
+                mobius: Mobius, 
+                klein: Klein,
+                trefoil: Trefoil,
+                lissajous: Lissajous
+            };
+            if (map[type]) return new map[type]();
+            if (['cube','tetrahedron','octahedron','icosahedron','dodecahedron'].includes(type)) {
+                return new Polyhedron(type);
+            }
+            return new Sphere();
+        }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // CLASS: MappingStrategy — Converts n to angular coordinates
+    // ═══════════════════════════════════════════════════════════════════════════════
+    class MappingStrategy {
+        static map(n, maxN, method, isPrime) {
+            const t = n / maxN;
+            let theta, phi;
+            
+            switch(method) {
+                case 'modular6': 
+                    theta = (n % 6) * (Math.PI / 3) + n * 0.001; 
+                    phi = Math.PI * t; 
+                    break;
+                case 'modular30': 
+                    theta = (n % 30) * (Math.PI / 15) + n * 0.0002; 
+                    phi = Math.PI * t; 
+                    break;
+                case 'log': 
+                    theta = PrimeMath.GOLDEN_ANGLE * n; 
+                    phi = Math.acos(1 - 2 * Math.log(n + 1) / Math.log(maxN + 1)); 
+                    break;
+                case 'primeStrand': 
+                    theta = PrimeMath.GOLDEN_ANGLE * n + (isPrime ? 0 : Math.PI); 
+                    phi = Math.acos(1 - 2 * t); 
+                    break;
+                    
+                // NEW: CRT Residue Torus - divisibility appears as bands
+                case 'crtTorus':
+                    // u and v become theta and phi for torus mapping
+                    // 210 = 2×3×5×7, 143 = 11×13
+                    theta = 2 * Math.PI * (n % 210) / 210;
+                    phi = 2 * Math.PI * (n % 143) / 143;
+                    break;
+                    
+                // NEW: Valuation 3D - prime powers become geometric axes
+                case 'valuation3D':
+                    // Uses v_2, v_3, v_5 as spherical-ish coordinates
+                    const v2 = PrimeMath.valuation(n, 2);
+                    const v3 = PrimeMath.valuation(n, 3);
+                    const v5 = PrimeMath.valuation(n, 5);
+                    // Map valuations to angles
+                    theta = Math.PI * 2 * (v2 + v3 * 0.1) / 10;
+                    phi = Math.PI * (0.1 + 0.8 * Math.tanh((v2 + v3 + v5) / 3));
+                    break;
+                    
+                // NEW: Log Phase - makes multiplication closer to addition
+                case 'logPhase':
+                    const alpha = 0.5;
+                    theta = 2 * Math.PI * alpha * Math.log(n + 1);
+                    phi = Math.acos(1 - 2 * Math.log(n + 1) / Math.log(maxN + 1));
+                    break;
+                
+                // NEW: Log Helix - ChatGPT's recommended mapping for mult→add
+                case 'logHelix':
+                    // Both theta AND z driven by log(n)
+                    // This makes multiplication = addition geometrically!
+                    const logN = Math.log(n + 1);
+                    const logMax = Math.log(maxN + 1);
+                    theta = 2 * Math.PI * logN;  // angle proportional to log
+                    phi = Math.acos(1 - 2 * logN / logMax);  // height also log-based
+                    break;
+                    
+                // NEW: Smallest Prime Factor bands
+                case 'spfBands':
+                    const spf = PrimeMath.smallestFactor(n);
+                    // SPF determines the "ring" (phi), n determines position in ring (theta)
+                    theta = PrimeMath.GOLDEN_ANGLE * n;
+                    // Map SPF to latitude bands: 2→top, 3→next, etc.
+                    const spfIndex = [2,3,5,7,11,13,17,19,23,29,31].indexOf(spf);
+                    phi = Math.PI * (0.1 + 0.8 * (spfIndex >= 0 ? spfIndex / 10 : 0.95));
+                    break;
+                    
+                // NEW: Smoothness mapping - smooth numbers cluster
+                case 'smoothness':
+                    const smooth = PrimeMath.smoothness(n, 7);
+                    const maxSmooth = Math.log2(maxN) * 2; // approximate max smoothness
+                    theta = PrimeMath.GOLDEN_ANGLE * n;
+                    // High smoothness → near pole (small phi), low smoothness → equator
+                    phi = Math.PI * (1 - 0.8 * Math.min(smooth / maxSmooth, 1));
+                    break;
+                
+                // CONTROL: Random mapping for hypothesis testing
+                case '_randomControl':
+                    theta = Math.random() * 2 * Math.PI;
+                    phi = Math.acos(1 - 2 * Math.random());
+                    break;
+                    
+                default: // 'spiral' - Golden Spiral
+                    theta = PrimeMath.GOLDEN_ANGLE * n; 
+                    phi = Math.acos(1 - 2 * t);
+            }
+            
+            return { t, theta, phi };
+        }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // CLASS: ColorScheme — Handles color calculation
+    // ═══════════════════════════════════════════════════════════════════════════════
+    class ColorScheme {
+        static TYPES = { 
+            regular: {r:255, g:107, b:107}, 
+            twin: {r:255, g:217, b:61}, 
+            sophie: {r:78, g:205, b:196}, 
+            mersenne: {r:157, g:78, b:221},
+            supersingular: {r:0, g:255, b:136}, 
+            safe: {r:255, g:102, b:178}, 
+            composite: {r:60, g:60, b:80}, 
+            semiprime: {r:120, g:100, b:140} 
+        };
+        
+        static getColor(point, mode) {
+            switch(mode) {
+                case 'type': 
+                    return point.primeType ? this.TYPES[point.primeType] : 
+                           (point.isSemiprime ? this.TYPES.semiprime : this.TYPES.composite);
+                case 'factor3': 
+                    return this._byFactors(point.n);
+                case 'primeIndex': 
+                    return this._byPrimeIndex(point);
+                case 'modular': 
+                    return this._hsl((point.n * 137.5) % 360, 70, 50);
+                    
+                // NEW: Smoothness coloring - bright = smooth, dark = hard
+                case 'smoothnessColor':
+                    return this._bySmoothness(point.n);
+                    
+                // NEW: Omega coloring - by number of prime factors
+                case 'omegaColor':
+                    return this._byOmega(point.n);
+                    
+                // NEW: SPF coloring - by smallest prime factor
+                case 'spfColor':
+                    return this._bySPF(point.n);
+                    
+                // NEW: Residue coloring - mod 210 rainbow
+                case 'residueColor':
+                    return this._byResidue(point.n);
+                    
+                default: 
+                    return point.primeType ? this.TYPES[point.primeType] : this.TYPES.composite;
+            }
+        }
+        
+        // NEW: Color by smoothness score
+        static _bySmoothness(n) {
+            const smooth = PrimeMath.smoothness(n, 7);
+            // Bright cyan for smooth, dark purple for rough
+            const intensity = Math.min(smooth / 6, 1);
+            return {
+                r: Math.floor(50 + 150 * (1 - intensity)),
+                g: Math.floor(50 + 205 * intensity),
+                b: Math.floor(100 + 155 * intensity)
+            };
+        }
+        
+        // NEW: Color by omega (number of prime factors with multiplicity)
+        static _byOmega(n) {
+            const omega = PrimeMath.omega(n);
+            // Distinct colors for different omega values
+            const colors = [
+                {r:100, g:100, b:100}, // 0 (n=1)
+                {r:255, g:107, b:107}, // 1 (prime)
+                {r:255, g:217, b:61},  // 2 (semiprime or prime²)
+                {r:78, g:205, b:196},  // 3
+                {r:157, g:78, b:221},  // 4
+                {r:0, g:255, b:136},   // 5
+                {r:255, g:102, b:178}, // 6+
+            ];
+            return colors[Math.min(omega, 6)];
+        }
+        
+        // NEW: Color by smallest prime factor
+        static _bySPF(n) {
+            const spf = PrimeMath.smallestFactor(n);
+            // Map SPF to hue
+            const spfMap = {2: 0, 3: 60, 5: 120, 7: 180, 11: 210, 13: 240, 17: 270, 19: 300};
+            const hue = spfMap[spf] !== undefined ? spfMap[spf] : 330;
+            // Primes get white tint
+            const sat = PrimeMath.isPrime(n) ? 30 : 80;
+            const light = PrimeMath.isPrime(n) ? 70 : 50;
+            return this._hsl(hue, sat, light);
+        }
+        
+        // NEW: Color by residue mod 210 (primorial)
+        static _byResidue(n) {
+            const residue = n % 210;
+            const hue = (residue / 210) * 360;
+            // Highlight residue classes coprime to 210
+            const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+            const coprime = gcd(residue, 210) === 1;
+            return this._hsl(hue, coprime ? 90 : 40, coprime ? 60 : 35);
+        }
+        
+        static _byFactors(n) {
+            const v2 = PrimeMath.primeExponent(n, 2);
+            const v3 = PrimeMath.primeExponent(n, 3);
+            const v5 = PrimeMath.primeExponent(n, 5);
+            if (v2 === 0 && v3 === 0 && v5 === 0) {
+                return PrimeMath.isPrime(n) ? {r:200, g:200, b:200} : {r:80, g:80, b:80};
+            }
+            return { 
+                r: Math.min(255, v2*60+40), 
+                g: Math.min(255, v3*80+40), 
+                b: Math.min(255, v5*100+40) 
+            };
+        }
+        
+        static _byPrimeIndex(point) {
+            if (!point.isPrime) return {r:80, g:80, b:80};
+            let idx = 0; 
+            for (let i = 2; i <= point.n; i++) if (PrimeMath.isPrime(i)) idx++;
+            return this._hsl((idx * PrimeMath.PHI * 360) % 360, 80, 55);
+        }
+        
+        static _hsl(h, s, l) {
+            s /= 100; l /= 100;
+            const c = (1 - Math.abs(2*l - 1)) * s;
+            const x = c * (1 - Math.abs((h/60)%2 - 1));
+            const m = l - c/2;
+            let r, g, b;
+            if (h < 60) {r=c; g=x; b=0;} 
+            else if (h < 120) {r=x; g=c; b=0;} 
+            else if (h < 180) {r=0; g=c; b=x;}
+            else if (h < 240) {r=0; g=x; b=c;} 
+            else if (h < 300) {r=x; g=0; b=c;} 
+            else {r=c; g=0; b=x;}
+            return { r: Math.round((r+m)*255), g: Math.round((g+m)*255), b: Math.round((b+m)*255) };
+        }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // CLASS: Renderer — Handles all canvas drawing
+    // ═══════════════════════════════════════════════════════════════════════════════
+    class Renderer {
+        constructor(canvas) {
+            this.canvas = canvas;
+            this.ctx = canvas.getContext('2d');
+            this.rotation = { x: 0.3, y: 0 };
+            this.zoom = 1.0;
+            this.panOffset = { x: 0, y: 0 }; // NEW: pan offset
+        }
+        
+        resize() { 
+            this.canvas.width = this.canvas.parentElement.clientWidth; 
+            this.canvas.height = this.canvas.parentElement.clientHeight; 
+        }
+        
+        get cx() { return this.canvas.width / 2 + this.panOffset.x; }
+        get cy() { return this.canvas.height / 2 + this.panOffset.y; }
+        get scale() { return Math.min(this.canvas.width, this.canvas.height) * 0.38 * this.zoom; }
+        
+        project(p) {
+            let {x, y, z} = p;
+            const cosY = Math.cos(this.rotation.y), sinY = Math.sin(this.rotation.y);
+            const x1 = x*cosY - z*sinY, z1 = x*sinY + z*cosY;
+            const cosX = Math.cos(this.rotation.x), sinX = Math.sin(this.rotation.x);
+            const y1 = y*cosX - z1*sinX, z2 = y*sinX + z1*cosX;
+            const fov = 2.5, s = fov / (fov + z2 + 1.5);
+            return { x: x1*s, y: y1*s, z: z2, scale: s };
+        }
+        
+        clear() { 
+            this.ctx.fillStyle = '#000'; 
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height); 
+        }
+        
+        drawWireframe(lines) {
+            this.ctx.strokeStyle = 'rgba(78, 205, 196, 0.25)'; 
+            this.ctx.lineWidth = 1;
+            for (const line of lines) {
+                this.ctx.beginPath();
+                for (let i = 0; i < line.length; i++) {
+                    const p = this.project(line[i]);
+                    const sx = this.cx + p.x * this.scale;
+                    const sy = this.cy - p.y * this.scale;
+                    i === 0 ? this.ctx.moveTo(sx, sy) : this.ctx.lineTo(sx, sy);
+                }
+                this.ctx.stroke();
+            }
+        }
+        
+        drawPoint(point, size, highlight = false) {
+            const proj = this.project(point);
+            const sx = this.cx + proj.x * this.scale;
+            const sy = this.cy - proj.y * this.scale;
+            const finalSize = size * proj.scale;
+            const alpha = highlight ? 1 : (0.4 + proj.scale * 0.6);
+            
+            if (highlight) { 
+                this.ctx.shadowColor = point.hex; 
+                this.ctx.shadowBlur = 15; 
+            }
+            
+            this.ctx.globalAlpha = alpha; 
+            this.ctx.fillStyle = point.hex;
+            this.ctx.beginPath(); 
+            this.ctx.arc(sx, sy, Math.max(1.5, finalSize), 0, Math.PI * 2); 
+            this.ctx.fill();
+            this.ctx.shadowBlur = 0; 
+            this.ctx.globalAlpha = 1;
+        }
+        
+        drawConnection(from, to, progress, fromHex, toHex) {
+            const p1 = this.project(from), p2 = this.project(to);
+            const sx1 = this.cx + p1.x * this.scale, sy1 = this.cy - p1.y * this.scale;
+            const sx2 = this.cx + p2.x * this.scale, sy2 = this.cy - p2.y * this.scale;
+            
+            const grad = this.ctx.createLinearGradient(sx1, sy1, sx2, sy2);
+            grad.addColorStop(0, fromHex); 
+            grad.addColorStop(1, toHex);
+            
+            this.ctx.strokeStyle = grad; 
+            this.ctx.lineWidth = 3; 
+            this.ctx.globalAlpha = progress * 0.9;
+            this.ctx.beginPath(); 
+            this.ctx.moveTo(sx1, sy1);
+            const endX = p1.x + (p2.x - p1.x) * progress;
+            const endY = p1.y + (p2.y - p1.y) * progress;
+            this.ctx.lineTo(this.cx + endX * this.scale, this.cy - endY * this.scale); 
+            this.ctx.stroke(); 
+            this.ctx.globalAlpha = 1;
+        }
+        
+        drawLabel(point, text, color = '#fff') {
+            const proj = this.project(point);
+            this.ctx.fillStyle = color; 
+            this.ctx.font = 'bold 12px sans-serif'; 
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(text, this.cx + proj.x * this.scale, this.cy - proj.y * this.scale - 16);
+        }
+        
+        // NEW: Draw error vector (dashed arrow from predicted to actual)
+        drawErrorVector(from, to, color = '#ff6b6b') {
+            const p1 = this.project(from), p2 = this.project(to);
+            const sx1 = this.cx + p1.x * this.scale, sy1 = this.cy - p1.y * this.scale;
+            const sx2 = this.cx + p2.x * this.scale, sy2 = this.cy - p2.y * this.scale;
+            
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = 2;
+            this.ctx.setLineDash([5, 3]);
+            this.ctx.beginPath();
+            this.ctx.moveTo(sx1, sy1);
+            this.ctx.lineTo(sx2, sy2);
+            this.ctx.stroke();
+            this.ctx.setLineDash([]);
+            
+            // Arrowhead
+            const angle = Math.atan2(sy2 - sy1, sx2 - sx1);
+            const headLen = 10;
+            this.ctx.fillStyle = color;
+            this.ctx.beginPath();
+            this.ctx.moveTo(sx2, sy2);
+            this.ctx.lineTo(sx2 - headLen * Math.cos(angle - Math.PI/6), sy2 - headLen * Math.sin(angle - Math.PI/6));
+            this.ctx.lineTo(sx2 - headLen * Math.cos(angle + Math.PI/6), sy2 - headLen * Math.sin(angle + Math.PI/6));
+            this.ctx.closePath();
+            this.ctx.fill();
+        }
+        
+        // NEW: Draw tree descent path
+        drawTreePath(points, progress) {
+            if (points.length < 2) return;
+            
+            const totalSegments = points.length - 1;
+            const currentSegment = Math.floor(progress * totalSegments);
+            const segmentProgress = (progress * totalSegments) % 1;
+            
+            for (let i = 0; i < Math.min(currentSegment + 1, totalSegments); i++) {
+                const from = points[i], to = points[i + 1];
+                const p1 = this.project(from), p2 = this.project(to);
+                const sx1 = this.cx + p1.x * this.scale, sy1 = this.cy - p1.y * this.scale;
+                const sx2 = this.cx + p2.x * this.scale, sy2 = this.cy - p2.y * this.scale;
+                
+                const prog = (i < currentSegment) ? 1 : segmentProgress;
+                const endX = sx1 + (sx2 - sx1) * prog;
+                const endY = sy1 + (sy2 - sy1) * prog;
+                
+                this.ctx.strokeStyle = `hsl(${280 - i * 20}, 70%, 60%)`;
+                this.ctx.lineWidth = 3;
+                this.ctx.beginPath();
+                this.ctx.moveTo(sx1, sy1);
+                this.ctx.lineTo(endX, endY);
+                this.ctx.stroke();
+            }
+        }
+        
+        findPointAt(mx, my, points) {
+            let closest = null, minDist = 15 / this.zoom;
+            for (const p of points) {
+                const proj = this.project(p);
+                const sx = this.cx + proj.x * this.scale;
+                const sy = this.cy - proj.y * this.scale;
+                const d = Math.hypot(mx - sx, my - sy);
+                if (d < minDist) { minDist = d; closest = p; }
+            }
+            return closest;
+        }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // CLASS: CollapseAnimation — Factorization collapse animation state
+    // ═══════════════════════════════════════════════════════════════════════════════
+    class CollapseAnimation {
+        constructor() { 
+            this.reset(); 
+            this.onComplete = null; 
+        }
+        
+        reset() { 
+            this.phase = 0; 
+            this.progress = 0; 
+            this.target = null; 
+            this.factorPoints = []; 
+        }
+        
+        select(target) { 
+            this.target = target; 
+            this.phase = 1; 
+            this.progress = 0; 
+            this.factorPoints = []; 
+        }
+        
+        start(target, factorPoints) { 
+            this.target = target; 
+            this.factorPoints = factorPoints; 
+            this.phase = 2; 
+            this.progress = 0; 
+        }
+        
+        update() { 
+            if (this.phase === 2) { 
+                this.progress += 0.025; 
+                if (this.progress >= 1.5) { 
+                    this.phase = 3; 
+                    if (this.onComplete) this.onComplete(); 
+                } 
+            } 
+        }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // NEW CLASS: TreeAnimation — Factor tree descent animation
+    // ═══════════════════════════════════════════════════════════════════════════════
+    class TreeAnimation {
+        constructor() {
+            this.reset();
+            this.onComplete = null;
+        }
+        
+        reset() {
+            this.active = false;
+            this.progress = 0;
+            this.pathPoints = [];
+            this.steps = [];
+        }
+        
+        start(pathPoints, steps) {
+            this.pathPoints = pathPoints;
+            this.steps = steps;
+            this.progress = 0;
+            this.active = true;
+        }
+        
+        update() {
+            if (this.active) {
+                this.progress += 0.008;
+                if (this.progress >= 1) {
+                    this.active = false;
+                    if (this.onComplete) this.onComplete();
+                }
+            }
+        }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // NEW CLASS: MultiplicationLab — Handles multiplication error analysis
+    // ═══════════════════════════════════════════════════════════════════════════════
+    class MultiplicationLab {
+        constructor(explorer) {
+            this.explorer = explorer;
+            this.showVector = false;
+            this.currentResult = null;
+            this.errorCache = [];
+            this.featureMode = 'position'; // position, log, valuation, mixed
+        }
+        
+        getPosition(n) {
+            const point = new Point(n);
+            const maxN = Math.max(n, this.explorer.maxN);
+            const {t, theta, phi} = MappingStrategy.map(n, maxN, this.explorer.mappingMethod, point.isPrime);
+            const pos = this.explorer.surface.mapPoint(t, theta, phi, point.isPrime);
+            point.setPosition(pos.x, pos.y, pos.z);
+            point.setColor(ColorScheme.getColor(point, this.explorer.colorMode));
+            return point;
+        }
+        
+        // NEW: Get feature vector based on current mode
+        getFeature(n) {
+            const maxN = this.explorer.maxN;
+            
+            switch (this.featureMode) {
+                case 'log':
+                    // Log feature: log(pq) = log(p) + log(q) exactly
+                    // Normalized to ~[0,1] range
+                    const logMax = Math.log(maxN);
+                    return { 
+                        x: Math.log(n) / logMax, 
+                        y: Math.log(n) / Math.log(2) / Math.log2(maxN),
+                        z: Math.log(n) / Math.log(3) / (Math.log(maxN) / Math.log(3))
+                    };
+                    
+                case 'valuation':
+                    // Valuation feature: v_p(pq) = v_p(p) + v_p(q) exactly
+                    // Capped at 8 for normalization
+                    return {
+                        x: Math.min(PrimeMath.valuation(n, 2), 8) / 8,
+                        y: Math.min(PrimeMath.valuation(n, 3), 8) / 8,
+                        z: Math.min(PrimeMath.valuation(n, 5), 8) / 8
+                    };
+                    
+                case 'mixed':
+                    // Mixed: combine log, valuations, and residues
+                    const logN = Math.log(n) / Math.log(maxN);
+                    const v2 = Math.min(PrimeMath.valuation(n, 2), 8) / 8;
+                    const v3 = Math.min(PrimeMath.valuation(n, 3), 8) / 8;
+                    return {
+                        x: logN,
+                        y: (v2 + v3) / 2,
+                        z: (n % 30) / 30
+                    };
+                    
+                case 'residue':
+                    // Residue fingerprint - normalized
+                    return {
+                        x: (n % 7) / 7,
+                        y: (n % 11) / 11,
+                        z: (n % 13) / 13
+                    };
+                    
+                case 'residueZero':
+                    // NEW: Residue zero-distance - how close to divisible?
+                    // Lower = closer to divisible by that prime
+                    // This is where factor detection becomes visual!
+                    const r7 = Math.min(n % 7, 7 - (n % 7)) / 3.5;  // 0 = divisible
+                    const r11 = Math.min(n % 11, 11 - (n % 11)) / 5.5;
+                    const r13 = Math.min(n % 13, 13 - (n % 13)) / 6.5;
+                    return { x: r7, y: r11, z: r13 };
+                    
+                default: // 'position'
+                    const point = this.getPosition(n);
+                    return { x: point.x, y: point.y, z: point.z };
+            }
+        }
+        
+        compute(p, q) {
+            const pointP = this.getPosition(p);
+            const pointQ = this.getPosition(q);
+            const pointPQ = this.getPosition(p * q);
+            
+            // Get features based on mode
+            const featP = this.getFeature(p);
+            const featQ = this.getFeature(q);
+            const featPQ = this.getFeature(p * q);
+            
+            const predicted = {
+                x: featP.x + featQ.x,
+                y: featP.y + featQ.y,
+                z: featP.z + featQ.z
+            };
+            
+            const actual = { x: featPQ.x, y: featPQ.y, z: featPQ.z };
+            
+            const error = Math.sqrt(
+                (predicted.x - actual.x) ** 2 +
+                (predicted.y - actual.y) ** 2 +
+                (predicted.z - actual.z) ** 2
+            );
+            
+            // Store both position (for visualization) and feature data
+            this.currentResult = { 
+                p, q, 
+                pointP, pointQ, pointPQ, 
+                featP, featQ, featPQ,
+                predicted, actual, 
+                error,
+                featureMode: this.featureMode
+            };
+            return this.currentResult;
+        }
+        
+        findMinimalErrorPairs(limit = 50, topN = 10) {
+            const results = [];
+            const primes = [];
+            
+            // Save current result before searching (may be null/undefined)
+            const savedResult = this.currentResult || null;
+            
+            for (let i = 2; i <= limit; i++) {
+                if (PrimeMath.isPrime(i)) primes.push(i);
+            }
+            
+            for (let i = 0; i < primes.length; i++) {
+                for (let j = i; j < primes.length; j++) {
+                    const result = this.compute(primes[i], primes[j]);
+                    results.push({ p: primes[i], q: primes[j], error: result.error });
+                }
+            }
+            
+            results.sort((a, b) => a.error - b.error);
+            this.errorCache = results;
+            
+            // Restore the original currentResult (only if it existed)
+            if (savedResult) {
+                this.currentResult = savedResult;
+            }
+            
+            return results.slice(0, topN);
+        }
+        
+        getRank(error) {
+            if (this.errorCache.length === 0) {
+                this.findMinimalErrorPairs(50, 50);
+            }
+            
+            let rank = 1;
+            for (const r of this.errorCache) {
+                if (error <= r.error) break;
+                rank++;
+            }
+            
+            return { rank, total: this.errorCache.length };
+        }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // NEW CLASS: TopologyAnalyzer — Measures structural importance of positions
+    // ═══════════════════════════════════════════════════════════════════════════════
+    class TopologyAnalyzer {
+        constructor(explorer) {
+            this.explorer = explorer;
+            this.hubScores = new Map(); // n -> hub score
+            this.radius = 0.15;
+            this.colorByHub = false;
+        }
+        
+        // Calculate hub score for each point (number of neighbors within radius)
+        analyze() {
+            this.hubScores.clear();
+            const points = this.explorer.points;
+            
+            // For each point, count neighbors within radius
+            for (let i = 0; i < points.length; i++) {
+                const p = points[i];
+                let neighbors = 0;
+                let totalDist = 0;
+                
+                for (let j = 0; j < points.length; j++) {
+                    if (i === j) continue;
+                    const q = points[j];
+                    const d = Math.sqrt(
+                        (p.x - q.x) ** 2 + 
+                        (p.y - q.y) ** 2 + 
+                        (p.z - q.z) ** 2
+                    );
+                    if (d < this.radius) {
+                        neighbors++;
+                        totalDist += d;
+                    }
+                }
+                
+                // Hub score = neighbor count (higher = more central/hub-like)
+                // Could also weight by inverse distance
+                this.hubScores.set(p.n, {
+                    neighbors,
+                    avgDist: neighbors > 0 ? totalDist / neighbors : 0,
+                    score: neighbors
+                });
+            }
+            
+            return this.getStatistics();
+        }
+        
+        getStatistics() {
+            const points = this.explorer.points;
+            
+            // Separate primes and composites
+            const primeScores = [];
+            const compositeScores = [];
+            const allScores = [];
+            
+            for (const p of points) {
+                const data = this.hubScores.get(p.n);
+                if (!data) continue;
+                
+                allScores.push({ n: p.n, score: data.score, isPrime: p.isPrime });
+                
+                if (p.isPrime) {
+                    primeScores.push(data.score);
+                } else {
+                    compositeScores.push(data.score);
+                }
+            }
+            
+            // Calculate averages
+            const primeAvg = primeScores.length > 0 
+                ? primeScores.reduce((a, b) => a + b, 0) / primeScores.length : 0;
+            const compositeAvg = compositeScores.length > 0 
+                ? compositeScores.reduce((a, b) => a + b, 0) / compositeScores.length : 0;
+            
+            // Find top hub positions
+            allScores.sort((a, b) => b.score - a.score);
+            const topHubs = allScores.slice(0, 10);
+            
+            // Count primes vs composites in top 10%
+            const top10Percent = Math.floor(allScores.length * 0.1);
+            const topPositions = allScores.slice(0, top10Percent);
+            const primesInTop = topPositions.filter(x => x.isPrime).length;
+            const compositesInTop = topPositions.length - primesInTop;
+            
+            // Calculate max score for normalization
+            const maxScore = allScores.length > 0 ? allScores[0].score : 1;
+            
+            return {
+                primeAvg,
+                compositeAvg,
+                primeCount: primeScores.length,
+                compositeCount: compositeScores.length,
+                topHubs,
+                primesInTop,
+                compositesInTop,
+                top10PercentSize: top10Percent,
+                maxScore,
+                ratio: compositeAvg / (primeAvg || 1) // How much higher are composite scores?
+            };
+        }
+        
+        // Get color based on hub score
+        getHubColor(n) {
+            const data = this.hubScores.get(n);
+            if (!data) return null;
+            
+            const stats = this.getStatistics();
+            const normalized = data.score / (stats.maxScore || 1);
+            
+            // Gradient from blue (low) -> yellow (med) -> red (high hub)
+            if (normalized > 0.7) {
+                return { r: 255, g: 50, b: 50 }; // Hot red - high hub
+            } else if (normalized > 0.4) {
+                return { r: 255, g: 200, b: 50 }; // Yellow - medium
+            } else if (normalized > 0.2) {
+                return { r: 50, g: 200, b: 200 }; // Cyan - low-medium
+            } else {
+                return { r: 50, g: 100, b: 200 }; // Blue - low hub
+            }
+        }
+        
+        // NEW: Run analysis across multiple configurations
+        batchAnalysis(explorer) {
+            const surfaces = ['sphere', 'icosahedron', 'cube', 'torus', 'dodecahedron'];
+            const mappings = ['spiral', 'modular6', 'modular30', 'log'];
+            const results = [];
+            
+            const originalSurface = explorer.surface;
+            const originalMapping = explorer.mappingMethod;
+            
+            for (const surf of surfaces) {
+                for (const map of mappings) {
+                    // Temporarily change config
+                    explorer.surface = SurfaceFactory.create(surf);
+                    explorer.mappingMethod = map;
+                    explorer.generatePoints();
+                    
+                    // Analyze
+                    const stats = this.analyze();
+                    
+                    // Count composites in top 10 specifically
+                    const allScores = [];
+                    for (const p of explorer.points) {
+                        const data = this.hubScores.get(p.n);
+                        if (data) allScores.push({ isPrime: p.isPrime, score: data.score });
+                    }
+                    allScores.sort((a, b) => b.score - a.score);
+                    const top10 = allScores.slice(0, 10);
+                    const compositesInTop10 = top10.filter(x => !x.isPrime).length;
+                    
+                    results.push({
+                        surface: surf,
+                        mapping: map,
+                        ratio: stats.ratio,
+                        primeAvg: stats.primeAvg,
+                        compositeAvg: stats.compositeAvg,
+                        compositesInTop10,
+                        primesInTop10: 10 - compositesInTop10
+                    });
+                }
+            }
+            
+            // Restore original config
+            explorer.surface = originalSurface;
+            explorer.mappingMethod = originalMapping;
+            explorer.generatePoints();
+            
+            return results;
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════════════
+        // VALIDATION SUITE — Hypothesis Testing for Hub Effect
+        // ═══════════════════════════════════════════════════════════════════════════
+        
+        // 1. BASE-RATE CORRECTED EXPECTATION
+        computeExpectedVsObserved(topK = 10) {
+            const points = this.explorer.points;
+            const totalPrimes = points.filter(p => p.isPrime).length;
+            const totalPoints = points.length;
+            const primeRate = totalPrimes / totalPoints;
+            
+            // Get actual top K hub positions
+            const allScores = [];
+            for (const p of points) {
+                const data = this.hubScores.get(p.n);
+                if (data) allScores.push({ n: p.n, isPrime: p.isPrime, score: data.score });
+            }
+            allScores.sort((a, b) => b.score - a.score);
+            const topHubs = allScores.slice(0, topK);
+            
+            const observedPrimes = topHubs.filter(x => x.isPrime).length;
+            const expectedPrimes = primeRate * topK;
+            
+            // Calculate deviation
+            const deviation = observedPrimes - expectedPrimes;
+            const deviationPercent = ((observedPrimes - expectedPrimes) / expectedPrimes) * 100;
+            
+            return {
+                topK,
+                totalPoints,
+                totalPrimes,
+                primeRate: (primeRate * 100).toFixed(2) + '%',
+                expectedPrimes: expectedPrimes.toFixed(2),
+                observedPrimes,
+                deviation: deviation.toFixed(2),
+                deviationPercent: deviationPercent.toFixed(1) + '%',
+                direction: deviation > 0 ? 'MORE primes than expected' : 
+                          deviation < 0 ? 'FEWER primes than expected' : 'Exactly as expected'
+            };
+        }
+        
+        // 2. PERMUTATION TEST — Gold standard significance test
+        permutationTest(topK = 10, iterations = 1000) {
+            const points = this.explorer.points;
+            const primeIndices = new Set(points.filter(p => p.isPrime).map((_, i) => i));
+            const totalPrimes = primeIndices.size;
+            
+            // Get current scores in order
+            const allScores = [];
+            for (let i = 0; i < points.length; i++) {
+                const p = points[i];
+                const data = this.hubScores.get(p.n);
+                if (data) allScores.push({ idx: i, score: data.score, isPrime: p.isPrime });
+            }
+            allScores.sort((a, b) => b.score - a.score);
+            
+            // Observed: primes in top K
+            const observedPrimes = allScores.slice(0, topK).filter(x => x.isPrime).length;
+            
+            // Permutation: shuffle prime labels, count how often we get <= observed
+            let countAsExtremeOrMore = 0;
+            const permutedCounts = [];
+            
+            for (let iter = 0; iter < iterations; iter++) {
+                // Randomly assign "prime" to totalPrimes random positions
+                const shuffledPrimes = new Set();
+                const indices = [...Array(points.length).keys()];
+                
+                // Fisher-Yates shuffle first totalPrimes
+                for (let i = indices.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [indices[i], indices[j]] = [indices[j], indices[i]];
+                }
+                for (let i = 0; i < totalPrimes; i++) {
+                    shuffledPrimes.add(indices[i]);
+                }
+                
+                // Count "primes" in top K positions (by hub score)
+                let primesInTop = 0;
+                for (let i = 0; i < topK; i++) {
+                    if (shuffledPrimes.has(allScores[i].idx)) primesInTop++;
+                }
+                
+                permutedCounts.push(primesInTop);
+                
+                // If observedPrimes <= random, it means primes avoid hubs
+                // If observedPrimes >= random, it means primes prefer hubs
+                if (primesInTop <= observedPrimes) countAsExtremeOrMore++;
+            }
+            
+            // p-value: fraction of permutations with as few or fewer primes
+            const pValue = countAsExtremeOrMore / iterations;
+            
+            // Calculate distribution stats
+            const mean = permutedCounts.reduce((a, b) => a + b, 0) / iterations;
+            const sorted = [...permutedCounts].sort((a, b) => a - b);
+            const median = sorted[Math.floor(iterations / 2)];
+            const min = sorted[0];
+            const max = sorted[sorted.length - 1];
+            
+            return {
+                topK,
+                iterations,
+                observedPrimes,
+                expectedMean: mean.toFixed(2),
+                expectedMedian: median,
+                expectedRange: `${min}-${max}`,
+                pValue: pValue.toFixed(4),
+                significant: pValue < 0.05,
+                interpretation: pValue < 0.05 
+                    ? (observedPrimes < mean ? '✅ SIGNIFICANT: Primes AVOID hubs!' : '✅ SIGNIFICANT: Primes PREFER hubs!')
+                    : '❌ NOT SIGNIFICANT: No hub preference detected'
+            };
+        }
+        
+        // 3. MAPPING CONTROL — Test with random angles instead of golden spiral
+        mappingControlTest(topK = 10, iterations = 100) {
+            const explorer = this.explorer;
+            const originalMapping = explorer.mappingMethod;
+            const results = [];
+            
+            // Test with current mapping
+            this.analyze();
+            const currentResult = this.computeExpectedVsObserved(topK);
+            results.push({
+                mapping: originalMapping,
+                observedPrimes: currentResult.observedPrimes,
+                expected: parseFloat(currentResult.expectedPrimes)
+            });
+            
+            // Test with randomized angles (multiple times)
+            const randomObserved = [];
+            for (let iter = 0; iter < iterations; iter++) {
+                // Temporarily use random mapping
+                explorer._randomSeed = iter;
+                explorer.mappingMethod = '_randomControl';
+                explorer.generatePoints();
+                this.analyze();
+                const randResult = this.computeExpectedVsObserved(topK);
+                randomObserved.push(randResult.observedPrimes);
+            }
+            
+            // Restore
+            explorer.mappingMethod = originalMapping;
+            explorer.generatePoints();
+            this.analyze();
+            
+            const randomMean = randomObserved.reduce((a, b) => a + b, 0) / iterations;
+            const randomSorted = [...randomObserved].sort((a, b) => a - b);
+            
+            return {
+                topK,
+                currentMapping: originalMapping,
+                currentObserved: currentResult.observedPrimes,
+                randomMean: randomMean.toFixed(2),
+                randomRange: `${randomSorted[0]}-${randomSorted[randomSorted.length - 1]}`,
+                difference: (currentResult.observedPrimes - randomMean).toFixed(2),
+                interpretation: Math.abs(currentResult.observedPrimes - randomMean) < 1 
+                    ? '❌ No difference from random — effect is likely artifact of base rate'
+                    : `⚠️ Difference of ${Math.abs(currentResult.observedPrimes - randomMean).toFixed(1)} primes — may be geometry effect`
+            };
+        }
+        
+        // 4. N-SCALING TEST — Does effect hold at different scales?
+        nScalingTest(topK = 10, nValues = [3000, 5000, 10000, 15000]) {
+            const explorer = this.explorer;
+            const originalMaxN = explorer.maxN;
+            const results = [];
+            
+            for (const n of nValues) {
+                explorer.maxN = n;
+                explorer.generatePoints();
+                this.analyze();
+                
+                const stats = this.computeExpectedVsObserved(topK);
+                const permTest = this.permutationTest(topK, 200); // Fewer iterations for speed
+                
+                results.push({
+                    maxN: n,
+                    totalPoints: stats.totalPoints,
+                    primeRate: stats.primeRate,
+                    expected: parseFloat(stats.expectedPrimes),
+                    observed: stats.observedPrimes,
+                    deviation: stats.deviation,
+                    pValue: permTest.pValue,
+                    significant: permTest.significant
+                });
+            }
+            
+            // Restore
+            explorer.maxN = originalMaxN;
+            explorer.generatePoints();
+            this.analyze();
+            
+            // Check consistency
+            const significantCount = results.filter(r => r.significant).length;
+            const directions = results.map(r => parseFloat(r.deviation) > 0 ? 'more' : 'fewer');
+            const consistent = new Set(directions).size === 1;
+            
+            return {
+                results,
+                consistentDirection: consistent,
+                significantAtAllScales: significantCount === results.length,
+                interpretation: significantCount === results.length && consistent
+                    ? '✅ Effect consistent across scales — likely real!'
+                    : significantCount === 0
+                    ? '❌ No significant effect at any scale — null hypothesis stands'
+                    : `⚠️ Mixed results (${significantCount}/${results.length} significant) — inconclusive`
+            };
+        }
+        
+        // 5. HUB RADIUS SENSITIVITY — Does effect depend on radius definition?
+        radiusSensitivityTest(topK = 10, radii = [0.08, 0.12, 0.15, 0.20, 0.25]) {
+            const originalRadius = this.radius;
+            const results = [];
+            
+            for (const r of radii) {
+                this.radius = r;
+                this.analyze();
+                
+                const stats = this.computeExpectedVsObserved(topK);
+                const permTest = this.permutationTest(topK, 200);
+                
+                results.push({
+                    radius: r,
+                    expected: parseFloat(stats.expectedPrimes),
+                    observed: stats.observedPrimes,
+                    deviation: stats.deviation,
+                    pValue: permTest.pValue,
+                    significant: permTest.significant
+                });
+            }
+            
+            // Restore
+            this.radius = originalRadius;
+            this.analyze();
+            
+            const significantCount = results.filter(r => r.significant).length;
+            
+            return {
+                results,
+                robustAcrossRadii: significantCount >= radii.length - 1,
+                interpretation: significantCount >= radii.length - 1
+                    ? '✅ Effect robust across different hub definitions'
+                    : significantCount === 0
+                    ? '❌ No effect at any radius — null hypothesis stands'
+                    : `⚠️ Effect appears at ${significantCount}/${radii.length} radii — sensitive to definition`
+            };
+        }
+        
+        // FULL VALIDATION SUITE — Run all tests
+        runFullValidation(topK = 10) {
+            console.log('🔬 Running full validation suite...');
+            
+            // Must analyze first
+            this.analyze();
+            
+            const results = {
+                timestamp: new Date().toISOString(),
+                config: {
+                    surface: this.explorer.surface.name,
+                    mapping: this.explorer.mappingMethod,
+                    maxN: this.explorer.maxN,
+                    hubRadius: this.radius,
+                    topK
+                },
+                tests: {}
+            };
+            
+            console.log('  1/5 Base-rate correction...');
+            results.tests.baseRate = this.computeExpectedVsObserved(topK);
+            
+            console.log('  2/5 Permutation test (1000 iterations)...');
+            results.tests.permutation = this.permutationTest(topK, 1000);
+            
+            console.log('  3/5 N-scaling test...');
+            results.tests.nScaling = this.nScalingTest(topK, [3000, 5000, 10000]);
+            
+            console.log('  4/5 Radius sensitivity...');
+            results.tests.radiusSensitivity = this.radiusSensitivityTest(topK, [0.10, 0.15, 0.20]);
+            
+            // Overall verdict
+            const verdicts = [
+                results.tests.permutation.significant,
+                results.tests.nScaling.significantAtAllScales,
+                results.tests.radiusSensitivity.robustAcrossRadii
+            ];
+            const passCount = verdicts.filter(v => v).length;
+            
+            results.verdict = {
+                testsRun: 4,
+                testsPassed: passCount,
+                conclusion: passCount >= 3 
+                    ? '🏆 DISCOVERY: Hub effect is REAL and robust!'
+                    : passCount >= 2
+                    ? '⚠️ INCONCLUSIVE: Some evidence, needs more investigation'
+                    : passCount === 1
+                    ? '🔍 WEAK: Effect appears in one test only — likely artifact'
+                    : '❌ NULL: No hub effect detected — hypothesis falsified'
+            };
+            
+            console.log('✅ Validation complete:', results.verdict.conclusion);
+            
+            return results;
+        }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // CLASS: PrimeExplorer — Main application controller
+    // ═══════════════════════════════════════════════════════════════════════════════
+    class PrimeExplorer {
+        constructor(canvasId) {
+            this.canvas = document.getElementById(canvasId);
+            this.renderer = new Renderer(this.canvas);
+            this.collapse = new CollapseAnimation();
+            this.collapse.onComplete = () => this._showCollapseOverlay();
+            
+            // NEW: Tree animation and Multiplication lab
+            this.treeAnim = new TreeAnimation();
+            this.multLab = new MultiplicationLab(this);
+            this.topoAnalyzer = new TopologyAnalyzer(this);
+            
+            this.points = [];
+            this.surface = SurfaceFactory.create('sphere');
+            this.maxN = 5000;
+            this.colorMode = 'type';
+            this.mappingMethod = 'spiral';
+            this.basePointSize = 3;
+            
+            // Display filters - what to SHOW
+            this.showPrimes = true; 
+            this.showSemiprimes = false; 
+            this.showComposites = false;
+            this.showWireframe = false; 
+            this.autoRotate = true; 
+            this.helixFilter = null;
+            
+            // Prime type visibility filters
+            this.primeTypeFilters = { 
+                regular: true, 
+                twin: true, 
+                sophie: true, 
+                mersenne: true, 
+                supersingular: true, 
+                safe: true 
+            };
+            
+            this.isDragging = false; 
+            this.lastMouse = {x:0, y:0}; 
+            this.hoveredPoint = null; 
+            this.selectedPoint = null;
+            
+            this._setupEvents();
+        }
+        
+        init() { 
+            this.renderer.resize(); 
+            this.generatePoints(); 
+            this._animate(); 
+        }
+        
+        // FIX: Generate ALL points, filtering happens in render()
+        generatePoints() {
+            this.points = [];
+            let primeCount = 0, specialCount = 0;
+            
+            for (let n = 2; n <= this.maxN; n++) {
+                const point = new Point(n);
+                
+                // Count stats
+                if (point.isPrime) {
+                    primeCount++;
+                    if (point.primeType !== 'regular') specialCount++;
+                }
+                
+                // Calculate position for ALL points
+                const {t, theta, phi} = MappingStrategy.map(n, this.maxN, this.mappingMethod, point.isPrime);
+                const pos = this.surface.mapPoint(t, theta, phi, point.isPrime);
+                point.setPosition(pos.x, pos.y, pos.z);
+                point.setColor(ColorScheme.getColor(point, this.colorMode));
+                
+                // Add ALL points - visibility filtering happens in render()
+                this.points.push(point);
+            }
+            
+            document.getElementById('statTotal').textContent = this.points.length;
+            document.getElementById('statPrimes').textContent = primeCount;
+            document.getElementById('statSpecial').textContent = specialCount;
+        }
+        
+        render() {
+            this.renderer.clear();
+            
+            if (this.showWireframe) {
+                this.renderer.drawWireframe(this.surface.getWireframe());
+            }
+            
+            // Filter points for visibility
+            let visible = this.points.filter(p => {
+                // Prime visibility
+                if (p.isPrime) {
+                    if (!this.showPrimes) return false;
+                    // Check prime type filters
+                    if (!this.primeTypeFilters[p.primeType]) return false;
+                }
+                // Semiprime visibility
+                else if (p.isSemiprime) {
+                    if (!this.showSemiprimes) return false;
+                }
+                // Composite visibility (non-prime, non-semiprime)
+                else {
+                    if (!this.showComposites) return false;
+                }
+                
+                // Helix divisibility filter
+                if (this.helixFilter && p.n % this.helixFilter !== 0) return false;
+                
+                return true;
+            });
+            
+            // Sort by z-depth for proper rendering
+            visible.sort((a, b) => this.renderer.project(a).z - this.renderer.project(b).z);
+            
+            // Draw collapse animation connections
+            if (this.collapse.phase >= 2) {
+                for (let i = 0; i < this.collapse.factorPoints.length; i++) {
+                    const prog = Math.min(1, this.collapse.progress * 2 - i * 0.15);
+                    if (prog > 0) {
+                        this.renderer.drawConnection(
+                            this.collapse.target, 
+                            this.collapse.factorPoints[i], 
+                            prog, 
+                            this.collapse.target.hex, 
+                            this.collapse.factorPoints[i].hex
+                        );
+                    }
+                }
+            }
+            
+            // NEW: Draw tree animation path
+            if (this.treeAnim.active && this.treeAnim.pathPoints.length > 0) {
+                this.renderer.drawTreePath(this.treeAnim.pathPoints, this.treeAnim.progress);
+            }
+            
+            // NEW: Draw multiplication error vector
+            if (this.multLab.showVector && this.multLab.currentResult) {
+                const r = this.multLab.currentResult;
+                const predPoint = { x: r.predicted.x, y: r.predicted.y, z: r.predicted.z };
+                this.renderer.drawErrorVector(predPoint, r.pointPQ, '#ff6b6b');
+            }
+            
+            // Draw all visible points
+            for (const p of visible) {
+                const isSelected = this.selectedPoint?.n === p.n;
+                const isFactor = this.collapse.factorPoints.some(f => f.n === p.n);
+                const isTreeNode = this.treeAnim.pathPoints.some(tp => tp.n === p.n);
+                const isMultPoint = this.multLab.currentResult && 
+                    (p.n === this.multLab.currentResult.p || 
+                     p.n === this.multLab.currentResult.q || 
+                     p.n === this.multLab.currentResult.p * this.multLab.currentResult.q);
+                
+                let size = this.basePointSize * (p.isPrime ? 1.3 : p.isSemiprime ? 1.1 : 0.8);
+                if (isSelected) size = this.basePointSize * 4 + (this.collapse.phase === 1 ? Math.sin(Date.now()/150)*2 : 0);
+                if (isFactor) size = this.basePointSize * 3.5;
+                if (isTreeNode) size = this.basePointSize * 3;
+                if (isMultPoint) size = this.basePointSize * 3;
+                
+                // Apply hub coloring if enabled
+                let pointToDraw = p;
+                if (this.topoAnalyzer.colorByHub && this.topoAnalyzer.hubScores.size > 0) {
+                    const hubColor = this.topoAnalyzer.getHubColor(p.n);
+                    if (hubColor) {
+                        // Create temporary point with hub color
+                        pointToDraw = { ...p, color: hubColor, hex: `rgb(${hubColor.r},${hubColor.g},${hubColor.b})` };
+                    }
+                }
+                
+                this.renderer.drawPoint(pointToDraw, size, isSelected || isFactor || isTreeNode || isMultPoint);
+            }
+            
+            // Draw labels
+            if (this.collapse.phase >= 1 && this.selectedPoint) {
+                this.renderer.drawLabel(this.selectedPoint, this.selectedPoint.n.toString());
+            }
+            if (this.collapse.phase >= 3) {
+                for (const fp of this.collapse.factorPoints) {
+                    this.renderer.drawLabel(fp, fp.n.toString(), '#ffd93d');
+                }
+            }
+            
+            // NEW: Draw tree node labels
+            if (this.treeAnim.pathPoints.length > 0) {
+                for (const tp of this.treeAnim.pathPoints) {
+                    this.renderer.drawLabel(tp, tp.n.toString(), '#9d4edd');
+                }
+            }
+            
+            // NEW: Draw mult lab labels
+            if (this.multLab.currentResult) {
+                const r = this.multLab.currentResult;
+                this.renderer.drawLabel(r.pointP, `p=${r.p}`, '#4ecdc4');
+                this.renderer.drawLabel(r.pointQ, `q=${r.q}`, '#4ecdc4');
+                this.renderer.drawLabel(r.pointPQ, `${r.p}×${r.q}`, '#ffd93d');
+            }
+        }
+        
+        _animate() {
+            if (this.autoRotate && this.collapse.phase !== 2 && !this.treeAnim.active) {
+                this.renderer.rotation.y += 0.003;
+            }
+            this.collapse.update();
+            this.treeAnim.update();
+            this.render();
+            requestAnimationFrame(() => this._animate());
+        }
+        
+        setSurface(type) { 
+            this.surface = SurfaceFactory.create(type); 
+            this.multLab.errorCache = []; // Clear cache on geometry change
+            this.multLab.currentResult = null;
+            document.getElementById('minErrorResult').classList.remove('visible');
+            document.getElementById('minErrorResult').innerHTML = '';
+            this.generatePoints(); 
+            this._updateSurfaceInfo(); 
+        }
+        
+        setMapping(method) { 
+            this.mappingMethod = method; 
+            this.multLab.errorCache = []; // Clear cache on geometry change
+            this.multLab.currentResult = null;
+            document.getElementById('minErrorResult').classList.remove('visible');
+            document.getElementById('minErrorResult').innerHTML = '';
+            this.generatePoints(); 
+        }
+        
+        setColorMode(mode) { 
+            this.colorMode = mode; 
+            this.generatePoints(); 
+        }
+        
+        setMaxN(n) { 
+            this.maxN = n; 
+            this.multLab.errorCache = []; // Clear cache on range change
+            this.multLab.currentResult = null;
+            document.getElementById('minErrorResult').classList.remove('visible');
+            document.getElementById('minErrorResult').innerHTML = '';
+            this.generatePoints(); 
+        }
+        
+        _updateSurfaceInfo() {
+            document.getElementById('surfaceInfo').innerHTML = 
+                '<h4>' + this.surface.name + '</h4><p>' + this.surface.description + '</p>';
+        }
+        
+        findNumber(n) {
+            if (n < 2) return;
+            
+            const point = new Point(n);
+            const {t, theta, phi} = MappingStrategy.map(n, Math.max(n, this.maxN), this.mappingMethod, point.isPrime);
+            const pos = this.surface.mapPoint(t, theta, phi, point.isPrime);
+            point.setPosition(pos.x, pos.y, pos.z);
+            point.setColor(ColorScheme.getColor(point, this.colorMode));
+            
+            this.selectedPoint = point;
+            this.collapse.select(point);
+            
+            document.getElementById('factorResult').classList.add('visible');
+            document.getElementById('resultN').textContent = n;
+            document.getElementById('resultType').textContent = point.isPrime 
+                ? 'Prime (' + point.primeType + ')' 
+                : (point.isSemiprime ? 'Semiprime' : 'Composite');
+            
+            document.getElementById('resultFactors').innerHTML = point.factors.map(f => {
+                const fp = new Point(f); 
+                fp.setColor(ColorScheme.getColor(fp, this.colorMode));
+                const tc = (fp.color.r + fp.color.g + fp.color.b) > 380 ? '#000' : '#fff';
+                return '<span class="factor-chip" style="background:' + fp.hex + ';color:' + tc + '">' + f + '</span>';
+            }).join(' × ');
+            
+            document.getElementById('collapseBtn').disabled = point.isPrime;
+            
+            if (n > this.maxN) { 
+                this.maxN = Math.ceil(n/500)*500; 
+                document.getElementById('maxN').value = this.maxN; 
+                document.getElementById('rangeValue').textContent = this.maxN; 
+                this.generatePoints(); 
+            }
+        }
+        
+        triggerCollapse() {
+            if (!this.selectedPoint || this.selectedPoint.isPrime) return;
+            
+            const uniqueFactors = [...new Set(this.selectedPoint.factors)];
+            const factorPoints = uniqueFactors.map(f => {
+                let fp = this.points.find(p => p.n === f);
+                if (!fp) {
+                    fp = new Point(f);
+                    const {t, theta, phi} = MappingStrategy.map(f, this.maxN, this.mappingMethod, fp.isPrime);
+                    const pos = this.surface.mapPoint(t, theta, phi, fp.isPrime);
+                    fp.setPosition(pos.x, pos.y, pos.z);
+                    fp.setColor(ColorScheme.getColor(fp, this.colorMode));
+                }
+                return fp;
+            });
+            
+            this.collapse.start(this.selectedPoint, factorPoints);
+        }
+        
+        _showCollapseOverlay() {
+            const overlay = document.getElementById('collapseOverlay');
+            overlay.classList.add('visible');
+            
+            document.getElementById('overlayFactors').innerHTML = this.selectedPoint.factors.map(f => {
+                const fp = new Point(f); 
+                fp.setColor(ColorScheme.getColor(fp, this.colorMode));
+                const tc = (fp.color.r + fp.color.g + fp.color.b) > 400 ? '#000' : '#fff';
+                return '<span style="background:' + fp.hex + ';color:' + tc + '">' + f + '</span>';
+            }).join(' × ');
+            
+            setTimeout(() => overlay.classList.remove('visible'), 2500);
+        }
+        
+        // NEW: Build and display factor tree
+        buildTree(n) {
+            if (n < 4 || PrimeMath.isPrime(n)) {
+                alert('Enter a composite number ≥ 4');
+                return;
+            }
+            
+            const steps = PrimeMath.getDescentSteps(n);
+            const pathPoints = [];
+            
+            // Create points for each unique number in the descent
+            const seen = new Set();
+            for (const step of steps) {
+                if (!seen.has(step.n)) {
+                    const point = this.multLab.getPosition(step.n);
+                    pathPoints.push(point);
+                    seen.add(step.n);
+                }
+                if (step.factors) {
+                    for (const f of step.factors) {
+                        if (!seen.has(f)) {
+                            pathPoints.push(this.multLab.getPosition(f));
+                            seen.add(f);
+                        }
+                    }
+                }
+            }
+            
+            this.treeAnim.pathPoints = pathPoints;
+            this.treeAnim.steps = steps;
+            
+            // Display path in UI
+            const pathEl = document.getElementById('treePath');
+            pathEl.classList.add('visible');
+            
+            const factors = PrimeMath.factorize(n);
+            let html = '<div style="color:#9d4edd;font-weight:bold;margin-bottom:6px;">Descent Path:</div>';
+            html += `<div class="tree-step" style="border-color:#ffd93d;">${n} (start)</div>`;
+            
+            for (const step of steps) {
+                if (step.factors) {
+                    html += `<div class="tree-step">${step.n} = ${step.smallest} × ${step.remainder}</div>`;
+                }
+            }
+            
+            html += `<div class="tree-step" style="border-color:#00ff88;">→ ${factors.join(' × ')} (primes)</div>`;
+            pathEl.innerHTML = html;
+            
+            document.getElementById('animateTreeBtn').disabled = false;
+        }
+        
+        // NEW: Animate tree descent
+        animateTree() {
+            if (this.treeAnim.pathPoints.length === 0) return;
+            this.treeAnim.start(this.treeAnim.pathPoints, this.treeAnim.steps);
+        }
+        
+        // NEW: Reset view to default
+        resetView() {
+            this.renderer.rotation = { x: 0.3, y: 0 };
+            this.renderer.zoom = 1.0;
+            this.renderer.panOffset = { x: 0, y: 0 };
+            document.getElementById('zoomLevel').textContent = '1.0x';
+        }
+        
+        // NEW: Center view (reset pan only)
+        centerView() {
+            this.renderer.panOffset = { x: 0, y: 0 };
+        }
+        
+        // NEW: Zoom controls
+        zoomIn() {
+            this.renderer.zoom = Math.min(4.0, this.renderer.zoom + 0.2);
+            document.getElementById('zoomLevel').textContent = this.renderer.zoom.toFixed(1) + 'x';
+        }
+        
+        zoomOut() {
+            this.renderer.zoom = Math.max(0.3, this.renderer.zoom - 0.2);
+            document.getElementById('zoomLevel').textContent = this.renderer.zoom.toFixed(1) + 'x';
+        }
+        
+        _setupEvents() {
+            // Debounced resize handler - fixes browser zoom issues
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    this.renderer.resize();
+                }, 100);
+            });
+            
+            // Track which button is pressed
+            this.dragButton = 0;
+            
+            this.canvas.addEventListener('mousedown', e => { 
+                this.isDragging = true; 
+                this.dragButton = e.button; // 0=left, 1=middle, 2=right
+                this.lastMouse = {x: e.clientX, y: e.clientY}; 
+                
+                // Prevent context menu on right-click
+                if (e.button === 2) e.preventDefault();
+            });
+            
+            this.canvas.addEventListener('contextmenu', e => e.preventDefault());
+            
+            this.canvas.addEventListener('mousemove', e => {
+                if (this.isDragging) {
+                    const dx = e.clientX - this.lastMouse.x;
+                    const dy = e.clientY - this.lastMouse.y;
+                    
+                    if (this.dragButton === 0) {
+                        // Left-click: rotate
+                        this.renderer.rotation.y += dx * 0.01;
+                        this.renderer.rotation.x += dy * 0.01;
+                    } else if (this.dragButton === 1 || this.dragButton === 2) {
+                        // Middle or right-click: pan
+                        this.renderer.panOffset.x += dx;
+                        this.renderer.panOffset.y += dy;
+                    }
+                    
+                    this.lastMouse = {x: e.clientX, y: e.clientY};
+                }
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const mx = (e.clientX - rect.left) * (this.canvas.width / rect.width);
+                const my = (e.clientY - rect.top) * (this.canvas.height / rect.height);
+                this.hoveredPoint = this.renderer.findPointAt(mx, my, this.points);
+                this._updateHoverInfo();
+            });
+            
+            this.canvas.addEventListener('mouseup', () => { 
+                this.isDragging = false; 
+                this.dragButton = 0;
+            });
+            
+            this.canvas.addEventListener('mouseleave', () => { 
+                this.isDragging = false; 
+                this.dragButton = 0;
+                this.hoveredPoint = null; 
+                document.getElementById('hoverInfo').classList.remove('visible'); 
+            });
+            
+            this.canvas.addEventListener('click', e => { 
+                // Only select on left-click, not after panning
+                if (e.button === 0 && this.hoveredPoint) { 
+                    document.getElementById('searchN').value = this.hoveredPoint.n; 
+                    this.findNumber(this.hoveredPoint.n); 
+                } 
+            });
+            
+            // Wheel zoom - works with mouse wheel and touchpad pinch
+            this.canvas.addEventListener('wheel', e => { 
+                e.preventDefault(); 
+                
+                // Detect if it's a pinch gesture (ctrlKey is set for pinch on touchpad)
+                const delta = e.ctrlKey ? e.deltaY * 0.01 : e.deltaY * 0.001;
+                this.renderer.zoom = Math.max(0.3, Math.min(4.0, this.renderer.zoom - delta)); 
+                document.getElementById('zoomLevel').textContent = this.renderer.zoom.toFixed(1) + 'x'; 
+            }, {passive: false});
+        }
+        
+        _updateHoverInfo() {
+            const el = document.getElementById('hoverInfo');
+            if (this.hoveredPoint) {
+                el.classList.add('visible');
+                document.getElementById('hoverN').textContent = this.hoveredPoint.n;
+                document.getElementById('hoverType').textContent = this.hoveredPoint.isPrime 
+                    ? 'Prime (' + this.hoveredPoint.primeType + ')' 
+                    : (this.hoveredPoint.isSemiprime ? 'Semiprime' : 'Composite');
+                document.getElementById('hoverFactors').textContent = this.hoveredPoint.factors.join(' × ');
+                document.getElementById('hoverSpecial').textContent = 
+                    this.hoveredPoint.primeType && this.hoveredPoint.primeType !== 'regular' 
+                        ? '✨ ' + this.hoveredPoint.primeType : '';
+                document.getElementById('hoverColor').style.background = this.hoveredPoint.hex;
+            } else {
+                el.classList.remove('visible');
+            }
+        }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════════
+    // UI BINDINGS & INITIALIZATION
+    // ═══════════════════════════════════════════════════════════════════════════════
+    function toggleSection(header) { 
+        header.parentElement.classList.toggle('collapsed'); 
+    }
+    
+    const explorer = new PrimeExplorer('canvas');
+    
+    // Surface and mapping
+    document.getElementById('surfaceType').addEventListener('change', e => explorer.setSurface(e.target.value));
+    document.getElementById('mappingMethod').addEventListener('change', e => explorer.setMapping(e.target.value));
+    
+    // Range controls
+    document.getElementById('maxN').addEventListener('input', e => { 
+        document.getElementById('rangeValue').textContent = e.target.value; 
+        explorer.setMaxN(parseInt(e.target.value)); 
+    });
+    document.getElementById('pointSize').addEventListener('input', e => { 
+        document.getElementById('sizeValue').textContent = e.target.value; 
+        explorer.basePointSize = parseFloat(e.target.value); 
+    });
+    
+    // Color mode
+    document.getElementById('colorMode').addEventListener('change', e => explorer.setColorMode(e.target.value));
+    
+    // Prime type filters
+    ['showRegular','showTwin','showSophie','showMersenne','showSupersingular','showSafe'].forEach(id => {
+        document.getElementById(id).addEventListener('change', e => { 
+            explorer.primeTypeFilters[id.replace('show','').toLowerCase()] = e.target.checked; 
+        });
+    });
+    
+    // Display toggles
+    document.getElementById('btnPrimes').addEventListener('click', e => { 
+        explorer.showPrimes = !explorer.showPrimes; 
+        e.target.classList.toggle('active', explorer.showPrimes); 
+    });
+    document.getElementById('btnSemiprimes').addEventListener('click', e => { 
+        explorer.showSemiprimes = !explorer.showSemiprimes; 
+        e.target.classList.toggle('active', explorer.showSemiprimes); 
+    });
+    document.getElementById('btnComposites').addEventListener('click', e => { 
+        explorer.showComposites = !explorer.showComposites; 
+        e.target.classList.toggle('active', explorer.showComposites); 
+    });
+    document.getElementById('btnWireframe').addEventListener('click', e => { 
+        explorer.showWireframe = !explorer.showWireframe; 
+        e.target.classList.toggle('active', explorer.showWireframe); 
+    });
+    document.getElementById('btnRotate').addEventListener('click', e => { 
+        explorer.autoRotate = !explorer.autoRotate; 
+        e.target.classList.toggle('active', explorer.autoRotate); 
+    });
+    
+    // Helix filter buttons
+    document.querySelectorAll('.prime-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const p = parseInt(btn.dataset.prime);
+            if (explorer.helixFilter === p) { 
+                explorer.helixFilter = null; 
+                btn.classList.remove('active'); 
+            } else { 
+                document.querySelectorAll('.prime-btn').forEach(b => b.classList.remove('active')); 
+                explorer.helixFilter = p; 
+                btn.classList.add('active'); 
+            }
+            document.getElementById('filterStatus').textContent = 
+                explorer.helixFilter ? 'Multiples of ' + explorer.helixFilter : 'No filter';
+        });
+    });
+    
+    document.getElementById('clearFilter').addEventListener('click', () => { 
+        explorer.helixFilter = null; 
+        document.querySelectorAll('.prime-btn').forEach(b => b.classList.remove('active')); 
+        document.getElementById('filterStatus').textContent = 'No filter'; 
+    });
+    
+    // Search and collapse
+    document.getElementById('searchBtn').addEventListener('click', () => { 
+        const n = parseInt(document.getElementById('searchN').value); 
+        if (n >= 2) explorer.findNumber(n); 
+    });
+    document.getElementById('searchN').addEventListener('keypress', e => { 
+        if (e.key === 'Enter') { 
+            const n = parseInt(e.target.value); 
+            if (n >= 2) explorer.findNumber(n); 
+        } 
+    });
+    document.getElementById('collapseBtn').addEventListener('click', () => explorer.triggerCollapse());
+    
+    // NEW: Multiplication Lab bindings
+    
+    // Feature mode selector
+    document.getElementById('featureMode').addEventListener('change', e => {
+        explorer.multLab.featureMode = e.target.value;
+        explorer.multLab.errorCache = []; // Clear cache on mode change
+        
+        // Update labels
+        const mode = e.target.value;
+        const labels = {
+            position: { p: 'Pos(p):', q: 'Pos(q):', sum: 'Pos(p)+Pos(q):', pq: 'Pos(p×q):' },
+            log: { p: 'Log(p):', q: 'Log(q):', sum: 'Log(p)+Log(q):', pq: 'Log(p×q):' },
+            valuation: { p: 'V(p):', q: 'V(q):', sum: 'V(p)+V(q):', pq: 'V(p×q):' },
+            mixed: { p: 'Φ(p):', q: 'Φ(q):', sum: 'Φ(p)+Φ(q):', pq: 'Φ(p×q):' },
+            residue: { p: 'R(p):', q: 'R(q):', sum: 'R(p)+R(q):', pq: 'R(p×q):' },
+            residueZero: { p: 'Z(p):', q: 'Z(q):', sum: 'Z(p)+Z(q):', pq: 'Z(p×q):' }
+        };
+        const l = labels[mode] || labels.position;
+        document.getElementById('labelP').textContent = l.p;
+        document.getElementById('labelQ').textContent = l.q;
+        document.getElementById('labelSum').textContent = l.sum;
+        document.getElementById('labelPQ').textContent = l.pq;
+        
+        // Update explanation
+        const explanations = {
+            position: '<strong>Position:</strong> Tests if geometric position is additive under multiplication. (Usually fails)',
+            log: '<strong>Log:</strong> log(p×q) = log(p) + log(q) <em>exactly!</em> Error should be ~0 for all pairs.',
+            valuation: '<strong>Valuation:</strong> v_p(a×b) = v_p(a) + v_p(b) <em>exactly!</em> Uses powers of 2,3,5.',
+            mixed: '<strong>Mixed:</strong> Combines log, valuations, and residues. Experimental blend.',
+            residue: '<strong>Residue:</strong> Uses (n mod 7, n mod 11, n mod 13). Shows divisibility patterns.',
+            residueZero: '<strong>Residue Zero-Dist:</strong> Distance to nearest divisibility. 0 = divisible! <em>Factor detection mode.</em>'
+        };
+        document.getElementById('featureExplain').innerHTML = explanations[mode] || explanations.position;
+        
+        // Clear results display
+        document.getElementById('minErrorResult').classList.remove('visible');
+    });
+    
+    document.getElementById('multBtn').addEventListener('click', () => {
+        const p = parseInt(document.getElementById('multP').value);
+        const q = parseInt(document.getElementById('multQ').value);
+        if (!p || !q || p < 2 || q < 2) {
+            alert('Enter two numbers ≥ 2');
+            return;
+        }
+        
+        const result = explorer.multLab.compute(p, q);
+        const rankInfo = explorer.multLab.getRank(result.error);
+        
+        document.getElementById('multResult').classList.add('visible');
+        
+        // Display feature values (not just position)
+        document.getElementById('posP').textContent = `(${result.featP.x.toFixed(3)}, ${result.featP.y.toFixed(3)}, ${result.featP.z.toFixed(3)})`;
+        document.getElementById('posQ').textContent = `(${result.featQ.x.toFixed(3)}, ${result.featQ.y.toFixed(3)}, ${result.featQ.z.toFixed(3)})`;
+        document.getElementById('posSum').textContent = `(${result.predicted.x.toFixed(3)}, ${result.predicted.y.toFixed(3)}, ${result.predicted.z.toFixed(3)})`;
+        document.getElementById('posPQ').textContent = `(${result.actual.x.toFixed(3)}, ${result.actual.y.toFixed(3)}, ${result.actual.z.toFixed(3)})`;
+        
+        const errorEl = document.getElementById('errorDelta');
+        errorEl.textContent = result.error.toFixed(6);
+        
+        // Color based on error magnitude
+        if (result.error < 0.0001) {
+            errorEl.className = 'good';
+            errorEl.style.color = '#00ff88';
+        } else if (result.error < 0.1) {
+            errorEl.className = 'good';
+            errorEl.style.color = '#4ecdc4';
+        } else {
+            errorEl.className = 'error';
+            errorEl.style.color = '#ff6b6b';
+        }
+        
+        const percentile = (rankInfo.rank / rankInfo.total) * 100;
+        let rankClass = 'rank-poor';
+        if (percentile <= 10) rankClass = 'rank-top';
+        else if (percentile <= 25) rankClass = 'rank-good';
+        else if (percentile <= 50) rankClass = 'rank-avg';
+        
+        document.getElementById('errorRank').innerHTML = `<span class="rank-indicator ${rankClass}">#${rankInfo.rank}/${rankInfo.total}</span>`;
+    });
+    
+    document.getElementById('showVectorBtn').addEventListener('click', () => {
+        explorer.multLab.showVector = !explorer.multLab.showVector;
+        document.getElementById('showVectorBtn').classList.toggle('active', explorer.multLab.showVector);
+    });
+    
+    document.getElementById('findMinErrorBtn').addEventListener('click', () => {
+        const btn = document.getElementById('findMinErrorBtn');
+        btn.textContent = 'Searching...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            // Clear cache first to force fresh calculation
+            explorer.multLab.errorCache = [];
+            const results = explorer.multLab.findMinimalErrorPairs(50, 50);
+            
+            const timestamp = new Date().toLocaleTimeString();
+            let html = `<div style="color:#00ff88;font-weight:bold;margin-bottom:4px;">Top 5 Minimal Error Pairs <span style="color:#666;font-size:0.5rem;">(${timestamp})</span>:</div>`;
+            results.slice(0, 5).forEach((r, i) => {
+                html += `<div style="font-size:0.65rem;cursor:pointer;" onclick="document.getElementById('multP').value=${r.p};document.getElementById('multQ').value=${r.q};">${i+1}. ${r.p} × ${r.q} = ${r.p*r.q} → Δ ${r.error.toFixed(4)}</div>`;
+            });
+            
+            const el = document.getElementById('minErrorResult');
+            el.innerHTML = html;
+            el.classList.add('visible');
+            
+            btn.textContent = 'Find Min Error';
+            btn.disabled = false;
+        }, 50);
+    });
+    
+    // NEW: Factor Tree bindings
+    document.getElementById('treeBtn').addEventListener('click', () => {
+        const n = parseInt(document.getElementById('treeN').value);
+        if (n >= 4) explorer.buildTree(n);
+    });
+    document.getElementById('treeN').addEventListener('keypress', e => {
+        if (e.key === 'Enter') {
+            const n = parseInt(e.target.value);
+            if (n >= 4) explorer.buildTree(n);
+        }
+    });
+    document.getElementById('animateTreeBtn').addEventListener('click', () => explorer.animateTree());
+    
+    // Legacy additive test (kept for compatibility)
+    document.getElementById('testBtn')?.addEventListener('click', () => {
+        const p = parseInt(document.getElementById('testP').value);
+        const q = parseInt(document.getElementById('testQ').value);
+        if (!p || !q) return;
+        
+        const result = explorer.multLab.compute(p, q);
+        document.getElementById('testResult').classList.add('visible');
+        document.getElementById('testResult').textContent = 
+            `Pos(${p})+Pos(${q}) vs Pos(${p*q}): Δ = ${result.error.toFixed(4)}`;
+    });
+    
+    // NEW: Topology Analysis bindings
+    document.getElementById('hubRadius').addEventListener('input', e => {
+        document.getElementById('radiusValue').textContent = e.target.value;
+        explorer.topoAnalyzer.radius = parseFloat(e.target.value);
+    });
+    
+    document.getElementById('analyzeTopologyBtn').addEventListener('click', () => {
+        const btn = document.getElementById('analyzeTopologyBtn');
+        btn.textContent = 'Analyzing...';
+        btn.disabled = true;
+        
+        // Use setTimeout to allow UI update
+        setTimeout(() => {
+            const stats = explorer.topoAnalyzer.analyze();
+            
+            // Display results
+            document.getElementById('topologyResult').classList.add('visible');
+            
+            // Hub stats
+            document.getElementById('hubStats').innerHTML = `
+                <div>Max hub score: <strong>${stats.maxScore}</strong></div>
+                <div>Analysis radius: <strong>${explorer.topoAnalyzer.radius.toFixed(2)}</strong></div>
+            `;
+            
+            // Prime vs Composite comparison
+            const ratio = stats.ratio.toFixed(2);
+            const ratioClass = stats.ratio > 1.1 ? 'hub-high' : stats.ratio > 0.9 ? 'hub-med' : 'hub-low';
+            document.getElementById('primeVsComposite').innerHTML = `
+                <div class="topo-compare">
+                    <div class="topo-prime">
+                        <div class="topo-value" style="color:#ff6b6b;">${stats.primeAvg.toFixed(1)}</div>
+                        <div class="topo-label">Prime Avg Hub</div>
+                    </div>
+                    <div class="topo-composite">
+                        <div class="topo-value" style="color:#888;">${stats.compositeAvg.toFixed(1)}</div>
+                        <div class="topo-label">Composite Avg Hub</div>
+                    </div>
+                </div>
+                <div style="text-align:center;margin-top:8px;">
+                    Composite/Prime ratio: <span class="${ratioClass}" style="font-weight:bold;font-size:1.1rem;">${ratio}x</span>
+                </div>
+                <div style="text-align:center;margin-top:6px;font-size:0.6rem;color:#888;">
+                    In top ${stats.top10PercentSize} positions (10%): 
+                    <span style="color:#ff6b6b;">${stats.primesInTop} primes</span> vs 
+                    <span style="color:#aaa;">${stats.compositesInTop} composites</span>
+                </div>
+            `;
+            
+            // Top hubs
+            document.getElementById('topHubs').innerHTML = stats.topHubs.map((h, i) => {
+                const typeLabel = h.isPrime ? '<span style="color:#ff6b6b;">P</span>' : '<span style="color:#888;">C</span>';
+                return `<div>${i+1}. <strong>${h.n}</strong> ${typeLabel} — score: ${h.score}</div>`;
+            }).join('');
+            
+            btn.textContent = 'Analyze';
+            btn.disabled = false;
+        }, 50);
+    });
+    
+    document.getElementById('colorByHubBtn').addEventListener('click', e => {
+        explorer.topoAnalyzer.colorByHub = !explorer.topoAnalyzer.colorByHub;
+        e.target.classList.toggle('active', explorer.topoAnalyzer.colorByHub);
+        
+        if (explorer.topoAnalyzer.colorByHub && explorer.topoAnalyzer.hubScores.size === 0) {
+            // Auto-analyze if not done yet
+            document.getElementById('analyzeTopologyBtn').click();
+        }
+    });
+    
+    // NEW: Batch analysis across all configurations
+    document.getElementById('batchAnalysisBtn').addEventListener('click', () => {
+        const btn = document.getElementById('batchAnalysisBtn');
+        btn.textContent = 'Testing...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            const results = explorer.topoAnalyzer.batchAnalysis(explorer);
+            
+            // Sort by composites in top 10 (descending)
+            results.sort((a, b) => b.compositesInTop10 - a.compositesInTop10);
+            
+            // Calculate summary
+            const avgRatio = results.reduce((s, r) => s + r.ratio, 0) / results.length;
+            const avgCompInTop10 = results.reduce((s, r) => s + r.compositesInTop10, 0) / results.length;
+            
+            let html = `<div style="color:#00ff88;font-weight:bold;margin-bottom:8px;">
+                🧪 BATCH ANALYSIS: ${results.length} configurations tested
+            </div>`;
+            
+            html += `<div style="margin-bottom:8px;padding:6px;background:rgba(0,0,0,0.3);border-radius:4px;">
+                <div>Avg Comp/Prime ratio: <strong>${avgRatio.toFixed(2)}x</strong></div>
+                <div>Avg composites in top 10: <strong style="color:#ff6b6b;">${avgCompInTop10.toFixed(1)}/10</strong></div>
+            </div>`;
+            
+            html += '<div style="font-weight:bold;margin-bottom:4px;">Results by config:</div>';
+            
+            for (const r of results) {
+                const ratioClass = r.ratio > 1.05 ? 'high' : r.ratio < 0.95 ? 'low' : 'neutral';
+                html += `<div class="batch-row">
+                    <span class="batch-config">${r.surface}+${r.mapping}</span>
+                    <span>
+                        <span class="batch-ratio ${ratioClass}">${r.ratio.toFixed(2)}x</span>
+                        <span class="batch-top10">(${r.compositesInTop10}C/${r.primesInTop10}P in top10)</span>
+                    </span>
+                </div>`;
+            }
+            
+            // Conclusion
+            const allTop10Composites = results.reduce((s, r) => s + r.compositesInTop10, 0);
+            const totalTop10 = results.length * 10;
+            const compPercent = (allTop10Composites / totalTop10 * 100).toFixed(1);
+            
+            html += `<div style="margin-top:10px;padding:8px;background:rgba(157,78,221,0.2);border-radius:4px;">
+                <div style="color:#9d4edd;font-weight:bold;">📊 CONCLUSION:</div>
+                <div>Across ALL configs, <strong style="color:#ff6b6b;">${compPercent}%</strong> of top-10 hub positions are composites</div>
+                <div style="font-size:0.6rem;color:#888;margin-top:4px;">
+                    (Random expectation with ~11% primes in range: ~89% composites)
+                </div>
+            </div>`;
+            
+            document.getElementById('batchResult').innerHTML = html;
+            document.getElementById('batchResult').classList.add('visible');
+            
+            btn.textContent = '🧪 Test All Configs';
+            btn.disabled = false;
+        }, 100);
+    });
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // HYPOTHESIS VALIDATION SUITE — Event Handlers
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    function getValidationTopK() {
+        return parseInt(document.getElementById('validationTopK').value);
+    }
+    
+    function showValidationResult(html) {
+        const el = document.getElementById('validationResult');
+        el.innerHTML = html;
+        el.style.display = 'block';
+    }
+    
+    // 1. Base Rate Test
+    document.getElementById('baseRateBtn').addEventListener('click', () => {
+        const btn = document.getElementById('baseRateBtn');
+        btn.textContent = '⏳...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            explorer.topoAnalyzer.analyze();
+            const result = explorer.topoAnalyzer.computeExpectedVsObserved(getValidationTopK());
+            
+            const html = `
+                <div style="color:#ff6b6b;font-weight:bold;margin-bottom:8px;">📊 BASE RATE CORRECTION</div>
+                <table style="width:100%;font-size:0.6rem;">
+                    <tr><td>Total points:</td><td><strong>${result.totalPoints}</strong></td></tr>
+                    <tr><td>Total primes:</td><td><strong>${result.totalPrimes}</strong></td></tr>
+                    <tr><td>Prime rate:</td><td><strong>${result.primeRate}</strong></td></tr>
+                    <tr><td colspan="2" style="border-top:1px solid #333;padding-top:4px;"></td></tr>
+                    <tr><td>Top K tested:</td><td><strong>${result.topK}</strong></td></tr>
+                    <tr><td>Expected primes:</td><td><strong>${result.expectedPrimes}</strong></td></tr>
+                    <tr><td>Observed primes:</td><td><strong style="color:${result.observedPrimes > parseFloat(result.expectedPrimes) ? '#00ff88' : '#ff6b6b'}">${result.observedPrimes}</strong></td></tr>
+                    <tr><td>Deviation:</td><td><strong>${result.deviation} (${result.deviationPercent})</strong></td></tr>
+                </table>
+                <div style="margin-top:8px;padding:6px;background:rgba(255,107,107,0.2);border-radius:4px;text-align:center;">
+                    <strong>${result.direction}</strong>
+                </div>
+            `;
+            
+            showValidationResult(html);
+            btn.textContent = '📊 Base Rate';
+            btn.disabled = false;
+        }, 50);
+    });
+    
+    // 2. Permutation Test
+    document.getElementById('permTestBtn').addEventListener('click', () => {
+        const btn = document.getElementById('permTestBtn');
+        btn.textContent = '⏳ Running 1000 permutations...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            explorer.topoAnalyzer.analyze();
+            const result = explorer.topoAnalyzer.permutationTest(getValidationTopK(), 1000);
+            
+            const pColor = result.significant ? '#00ff88' : '#ff6b6b';
+            
+            const html = `
+                <div style="color:#ff6b6b;font-weight:bold;margin-bottom:8px;">🎲 PERMUTATION TEST</div>
+                <table style="width:100%;font-size:0.6rem;">
+                    <tr><td>Iterations:</td><td><strong>${result.iterations}</strong></td></tr>
+                    <tr><td>Top K tested:</td><td><strong>${result.topK}</strong></td></tr>
+                    <tr><td colspan="2" style="border-top:1px solid #333;padding-top:4px;"></td></tr>
+                    <tr><td>Observed primes:</td><td><strong>${result.observedPrimes}</strong></td></tr>
+                    <tr><td>Expected (mean):</td><td><strong>${result.expectedMean}</strong></td></tr>
+                    <tr><td>Expected (median):</td><td><strong>${result.expectedMedian}</strong></td></tr>
+                    <tr><td>Expected range:</td><td><strong>${result.expectedRange}</strong></td></tr>
+                    <tr><td colspan="2" style="border-top:1px solid #333;padding-top:4px;"></td></tr>
+                    <tr><td>p-value:</td><td><strong style="color:${pColor}">${result.pValue}</strong></td></tr>
+                    <tr><td>Significant (p<0.05)?</td><td><strong style="color:${pColor}">${result.significant ? 'YES' : 'NO'}</strong></td></tr>
+                </table>
+                <div style="margin-top:8px;padding:6px;background:rgba(${result.significant ? '0,255,136' : '255,107,107'},0.2);border-radius:4px;text-align:center;">
+                    <strong>${result.interpretation}</strong>
+                </div>
+            `;
+            
+            showValidationResult(html);
+            btn.textContent = '🎲 Permutation';
+            btn.disabled = false;
+        }, 50);
+    });
+    
+    // 3. N-Scaling Test
+    document.getElementById('nScaleBtn').addEventListener('click', () => {
+        const btn = document.getElementById('nScaleBtn');
+        btn.textContent = '⏳ Testing scales...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            const result = explorer.topoAnalyzer.nScalingTest(getValidationTopK(), [3000, 5000, 10000, 15000]);
+            
+            let tableRows = '';
+            for (const r of result.results) {
+                const pColor = r.significant ? '#00ff88' : '#ff6b6b';
+                tableRows += `<tr>
+                    <td>N=${r.maxN}</td>
+                    <td>${r.primeRate}</td>
+                    <td>${r.expected.toFixed(1)}</td>
+                    <td>${r.observed}</td>
+                    <td style="color:${pColor}">${r.pValue}</td>
+                    <td style="color:${pColor}">${r.significant ? '✅' : '❌'}</td>
+                </tr>`;
+            }
+            
+            const html = `
+                <div style="color:#ff6b6b;font-weight:bold;margin-bottom:8px;">📈 N-SCALING TEST</div>
+                <table style="width:100%;font-size:0.55rem;border-collapse:collapse;">
+                    <tr style="border-bottom:1px solid #333;">
+                        <th>N</th><th>π rate</th><th>Exp</th><th>Obs</th><th>p-val</th><th>Sig?</th>
+                    </tr>
+                    ${tableRows}
+                </table>
+                <div style="margin-top:8px;padding:6px;background:rgba(${result.significantAtAllScales ? '0,255,136' : '255,107,107'},0.2);border-radius:4px;text-align:center;">
+                    <strong>${result.interpretation}</strong>
+                </div>
+            `;
+            
+            showValidationResult(html);
+            btn.textContent = '📈 N-Scaling';
+            btn.disabled = false;
+        }, 50);
+    });
+    
+    // 4. Radius Sensitivity Test
+    document.getElementById('radiusTestBtn').addEventListener('click', () => {
+        const btn = document.getElementById('radiusTestBtn');
+        btn.textContent = '⏳ Testing radii...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            const result = explorer.topoAnalyzer.radiusSensitivityTest(getValidationTopK(), [0.08, 0.12, 0.15, 0.20, 0.25]);
+            
+            let tableRows = '';
+            for (const r of result.results) {
+                const pColor = r.significant ? '#00ff88' : '#ff6b6b';
+                tableRows += `<tr>
+                    <td>r=${r.radius}</td>
+                    <td>${r.expected.toFixed(1)}</td>
+                    <td>${r.observed}</td>
+                    <td>${r.deviation}</td>
+                    <td style="color:${pColor}">${r.pValue}</td>
+                    <td style="color:${pColor}">${r.significant ? '✅' : '❌'}</td>
+                </tr>`;
+            }
+            
+            const html = `
+                <div style="color:#ff6b6b;font-weight:bold;margin-bottom:8px;">⭕ RADIUS SENSITIVITY TEST</div>
+                <table style="width:100%;font-size:0.55rem;border-collapse:collapse;">
+                    <tr style="border-bottom:1px solid #333;">
+                        <th>Radius</th><th>Exp</th><th>Obs</th><th>Dev</th><th>p-val</th><th>Sig?</th>
+                    </tr>
+                    ${tableRows}
+                </table>
+                <div style="margin-top:8px;padding:6px;background:rgba(${result.robustAcrossRadii ? '0,255,136' : '255,107,107'},0.2);border-radius:4px;text-align:center;">
+                    <strong>${result.interpretation}</strong>
+                </div>
+            `;
+            
+            showValidationResult(html);
+            btn.textContent = '⭕ Radius Test';
+            btn.disabled = false;
+        }, 50);
+    });
+    
+    // 5. FULL VALIDATION SUITE
+    document.getElementById('fullValidationBtn').addEventListener('click', () => {
+        const btn = document.getElementById('fullValidationBtn');
+        btn.textContent = '⏳ Running full validation suite...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            const result = explorer.topoAnalyzer.runFullValidation(getValidationTopK());
+            
+            const verdictColor = result.verdict.testsPassed >= 3 ? '#00ff88' : 
+                                 result.verdict.testsPassed >= 2 ? '#ffd93d' : '#ff6b6b';
+            
+            const html = `
+                <div style="color:#ff6b6b;font-weight:bold;margin-bottom:8px;">🔬 FULL VALIDATION RESULTS</div>
+                
+                <div style="margin-bottom:8px;padding:6px;background:rgba(0,0,0,0.4);border-radius:4px;font-size:0.55rem;">
+                    <div><strong>Config:</strong> ${result.config.surface} + ${result.config.mapping}</div>
+                    <div><strong>Max N:</strong> ${result.config.maxN} | <strong>Hub Radius:</strong> ${result.config.hubRadius} | <strong>Top K:</strong> ${result.config.topK}</div>
+                </div>
+                
+                <div style="font-weight:bold;margin-bottom:4px;">📊 Base Rate:</div>
+                <div style="font-size:0.55rem;margin-bottom:8px;padding-left:8px;">
+                    Expected: ${result.tests.baseRate.expectedPrimes} | Observed: ${result.tests.baseRate.observedPrimes} | ${result.tests.baseRate.direction}
+                </div>
+                
+                <div style="font-weight:bold;margin-bottom:4px;">🎲 Permutation Test:</div>
+                <div style="font-size:0.55rem;margin-bottom:8px;padding-left:8px;">
+                    p-value: <strong style="color:${result.tests.permutation.significant ? '#00ff88' : '#ff6b6b'}">${result.tests.permutation.pValue}</strong> | 
+                    ${result.tests.permutation.interpretation}
+                </div>
+                
+                <div style="font-weight:bold;margin-bottom:4px;">📈 N-Scaling:</div>
+                <div style="font-size:0.55rem;margin-bottom:8px;padding-left:8px;">
+                    ${result.tests.nScaling.interpretation}
+                </div>
+                
+                <div style="font-weight:bold;margin-bottom:4px;">⭕ Radius Sensitivity:</div>
+                <div style="font-size:0.55rem;margin-bottom:8px;padding-left:8px;">
+                    ${result.tests.radiusSensitivity.interpretation}
+                </div>
+                
+                <div style="margin-top:12px;padding:10px;background:rgba(${verdictColor === '#00ff88' ? '0,255,136' : verdictColor === '#ffd93d' ? '255,217,61' : '255,107,107'},0.25);border-radius:6px;text-align:center;border:2px solid ${verdictColor};">
+                    <div style="font-size:1.1rem;font-weight:bold;color:${verdictColor};">${result.verdict.conclusion}</div>
+                    <div style="font-size:0.6rem;margin-top:4px;">Tests passed: ${result.verdict.testsPassed}/${result.verdict.testsRun}</div>
+                </div>
+            `;
+            
+            showValidationResult(html);
+            btn.textContent = '🔬 RUN FULL VALIDATION';
+            btn.disabled = false;
+        }, 100);
+    });
+    
+    // Initialize
+    explorer.init();
+    explorer._updateSurfaceInfo();
+    
+    // NEW: View control buttons
+    document.getElementById('zoomInBtn').addEventListener('click', () => explorer.zoomIn());
+    document.getElementById('zoomOutBtn').addEventListener('click', () => explorer.zoomOut());
+    document.getElementById('centerViewBtn').addEventListener('click', () => explorer.centerView());
+    document.getElementById('resetViewBtn').addEventListener('click', () => explorer.resetView());
+    document.getElementById('spinToggleBtn').addEventListener('click', e => {
+        explorer.autoRotate = !explorer.autoRotate;
+        e.target.classList.toggle('active', explorer.autoRotate);
+        // Also sync the other spin button if it exists
+        const btnRotate = document.getElementById('btnRotate');
+        if (btnRotate) btnRotate.classList.toggle('active', explorer.autoRotate);
+    });
+    
+    // Sync the panel Spin button with the overlay button
+    const originalRotateBtn = document.getElementById('btnRotate');
+    if (originalRotateBtn) {
+        const originalHandler = originalRotateBtn.onclick;
+        originalRotateBtn.addEventListener('click', () => {
+            document.getElementById('spinToggleBtn').classList.toggle('active', explorer.autoRotate);
+        });
+    }
+    </script>
+</body>
+</html>

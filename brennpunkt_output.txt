@@ -1,0 +1,84 @@
+=================================================================
+BRENNPUNKT: The Prime Focal Point
+=================================================================
+
+Primes up to 500: 95
+
+--- Fine search for Brennpunkt ---
+t         Spread         
+-------------------------
+0.2000    0.477711       
+0.2300    0.473481       
+0.2600    0.470174       
+0.2900    0.467875       
+0.3200    0.466696       
+0.3500    0.466786       
+0.3800    0.468352       
+0.4100    0.471678       
+0.4400    0.477164       
+0.4700    0.485383       
+
+*** MINIMUM at t = 0.332000, spread = 0.466569 ***
+
+--- Comparison to special values ---
+
+Focal t = 0.332000
+
+  1/3             = 0.333333  (diff = 0.001333)
+  1/π             = 0.318310  (diff = 0.013690)
+  (√5-1)/4        = 0.309017  (diff = 0.022983)
+  (φ-1)/2         = 0.309017  (diff = 0.022983)
+  1/(2φ)          = 0.309017  (diff = 0.022983)
+  1/e             = 0.367879  (diff = 0.035879)
+  1/φ²            = 0.381966  (diff = 0.049966)
+  2/5             = 0.400000  (diff = 0.068000)
+  1/4             = 0.250000  (diff = 0.082000)
+
+--- Ultra-fine search ---
+Refined Brennpunkt: t = 0.33320000
+Minimum spread: 0.46656821
+
+--- What is t = 0.333200? ---
+t × φ = 0.539129
+t × φ² = 0.872329
+t × 2 = 0.666400
+t × π = 1.046779
+t × e = 0.905732
+1/t = 3.001200
+sqrt(t) = 0.577235
+
+--- Does Brennpunkt depend on N? ---
+  N=100: Brennpunkt t ≈ 0.3050
+  N=200: Brennpunkt t ≈ 0.3350
+  N=300: Brennpunkt t ≈ 0.3250
+  N=500: Brennpunkt t ≈ 0.3350
+  N=1000: Brennpunkt t ≈ 0.3300
+
+=================================================================
+SYNTHESIS
+=================================================================
+
+The BRENNPUNKT exists!
+
+Under logarithmic partial inversion, primes cluster tightest
+at a specific transformation parameter t*.
+
+This focal point appears to be:
+  t* ≈ 0.3332
+
+Nearby special values:
+  1/3 = 0.3333
+  1/φ² = 0.3820
+  1/π = 0.3183
+
+The Brennpunkt is where the prime "rays" converge.
+Like a lens made of number theory.
+
+Physical interpretation:
+  - Inversion is like a "number-theoretic lens"
+  - Primes are "light rays"
+  - The Brennpunkt is where they focus
+
+This focal parameter may encode something fundamental
+about prime distribution in golden-ratio geometry.
+

@@ -1,0 +1,124 @@
+=================================================================
+PRIME FOCAL POINT
+Finding where primes cluster under partial inversion
+=================================================================
+
+Primes up to 300: 62
+
+=================================================================
+SEARCH 1: Linear Interpolation
+=================================================================
+
+t       Spread         Centroid dist from origin
+------------------------------------------------
+0.00    0.5167         0.1394                    ← MIN
+0.10    0.8225         0.1022                   
+0.20    1.3475         0.2949                   
+0.30    1.9196         0.4991                   
+0.40    2.5068         0.7048                   
+0.50    3.1005         0.9110                   
+0.60    3.6976         1.1174                   
+0.70    4.2966         1.3239                   
+0.80    4.8969         1.5306                   
+0.90    5.4981         1.7372                   
+1.00    6.0998         1.9439                   
+
+Minimum spread at t = 0.00
+Spread = 0.5167
+
+--- Fine search around minimum ---
+Refined minimum at t = 0.0000
+Spread = 0.516734
+
+=================================================================
+SEARCH 2: Logarithmic Interpolation (smoother)
+=================================================================
+
+t       Spread         Points    
+---------------------------------
+0.00    0.5167         62        
+0.10    0.4898         62        
+0.20    0.4710         62        
+0.30    0.4617         62        
+0.40    0.4658         62        
+0.50    0.4937         62        
+0.60    0.5766         62        
+0.70    0.8040         62        
+0.80    1.3918         62        
+0.90    2.8079         62        
+1.00    6.0998         62        
+
+Minimum spread at t = 0.32
+
+=================================================================
+ANALYSIS: What happens at the focal point?
+=================================================================
+
+At focal point t = 0.00:
+Centroid: (0.0513, 0.0204, -0.1280)
+
+Primes closest to focal centroid:
+  p=2: distance=0.1456, original_r=0.0067
+  p=3: distance=0.1479, original_r=0.0100
+  p=5: distance=0.1535, original_r=0.0167
+  p=7: distance=0.1621, original_r=0.0233
+  p=11: distance=0.1689, original_r=0.0367
+  p=13: distance=0.1727, original_r=0.0433
+  p=19: distance=0.1911, original_r=0.0633
+  p=17: distance=0.1953, original_r=0.0567
+  p=29: distance=0.2061, original_r=0.0967
+  p=23: distance=0.2065, original_r=0.0767
+  p=31: distance=0.2231, original_r=0.1033
+  p=37: distance=0.2245, original_r=0.1233
+  p=47: distance=0.2485, original_r=0.1567
+  p=41: distance=0.2682, original_r=0.1367
+  p=43: distance=0.2710, original_r=0.1433
+
+Primes farthest from focal centroid:
+  p=257: distance=0.7378, original_r=0.8567
+  p=251: distance=0.7408, original_r=0.8367
+  p=229: distance=0.7481, original_r=0.7633
+  p=283: distance=0.8051, original_r=0.9433
+  p=269: distance=0.8149, original_r=0.8967
+  p=263: distance=0.8183, original_r=0.8767
+  p=277: distance=0.8208, original_r=0.9233
+  p=281: distance=0.8333, original_r=0.9367
+  p=271: distance=0.8398, original_r=0.9033
+  p=293: distance=0.8455, original_r=0.9767
+
+=================================================================
+IS FOCAL t SPECIAL?
+=================================================================
+
+Focal t = 0.000000
+1/φ = 0.618034
+1/φ² = 0.381966
+(φ-1)/φ = 0.381966
+1/2 = 0.500000
+1/e = 0.367879
+
+=================================================================
+SYNTHESIS
+=================================================================
+
+PRIME FOCAL POINT EXISTS at t ≈ 0.00
+
+This is the transformation parameter where primes cluster tightest.
+
+Interpretation:
+- t=0: primes spread from center to surface (original)
+- t=1: primes spread from surface to infinity (inverted)
+- t=0.00: primes FOCUS to minimum spread
+
+Like a lens focusing light, partial inversion FOCUSES primes.
+
+The focal parameter may relate to:
+- Golden ratio (φ, 1/φ, 1/φ²)?
+- The geometry of the golden spiral?
+- Something deeper about prime distribution?
+
+NEXT:
+- Does the focal point change with different geometries?
+- What's special about primes AT the focal point vs far from it?
+- Is there a "focal surface" rather than a point?
+

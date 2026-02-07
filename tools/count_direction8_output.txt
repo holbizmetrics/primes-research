@@ -1,0 +1,9 @@
+Counting length-8 gap APs by direction up to 10M...
+INC: p=128981 d=2 gaps=[2, 4, 6, 8, 10, 12, 14]
+DEC: p=5647457 d=-2 gaps=[14, 12, 10, 8, 6, 4, 2]
+DEC: p=7496791 d=-2 gaps=[16, 14, 12, 10, 8, 6, 4]
+INC: p=8050267 d=4 gaps=[4, 8, 12, 16, 20, 24, 28]
+
+Increasing (d>0): 2
+Decreasing (d<0): 2
+Ratio dec/inc: 1.0000000000000000000000000000000000000

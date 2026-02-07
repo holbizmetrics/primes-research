@@ -1,0 +1,18 @@
+N=200;R=0.5;
+pv=select(isprime,[2..N]);
+cv=[];
+for(n=4,N,if(\!isprime(n),cv=concat(cv,[n])));
+np=#pv;nc=#cv;
+print("P=",np," C=",nc);
+bsc(v,nn,t,lam)={my(k=2*Pi*lam,ar=0.0,ai=0.0);for(j=1,nn,my(n=v[j],ro=max(n/N,1e-10),rt=ro^(1-2*t)*R^(2*t),zu=1-2.0*n/N,ph=2*k*rt*zu);ar+=cos(ph);ai+=sin(ph));(ar^2+ai^2)/nn^2};
+print("--- At t=0.25 ---");
+print("P l8=",precision(bsc(pv,np,.25,8),5)," C l8=",precision(bsc(cv,nc,.25,8),5)," ratio=",precision(bsc(pv,np,.25,8)/bsc(cv,nc,.25,8),3));
+print("P l21=",precision(bsc(pv,np,.25,21),5)," C l21=",precision(bsc(cv,nc,.25,21),5)," ratio=",precision(bsc(pv,np,.25,21)/bsc(cv,nc,.25,21),3));
+print("--- At t=0.33 ---");
+print("P l8=",precision(bsc(pv,np,.33,8),5)," C l8=",precision(bsc(cv,nc,.33,8),5)," ratio=",precision(bsc(pv,np,.33,8)/bsc(cv,nc,.33,8),3));
+print("P l21=",precision(bsc(pv,np,.33,21),5)," C l21=",precision(bsc(cv,nc,.33,21),5)," ratio=",precision(bsc(pv,np,.33,21)/bsc(cv,nc,.33,21),3));
+print("--- Scan t for lam=8 ---");
+forstep(t=0.15,0.45,0.02,my(r=bsc(pv,np,t,8)/max(bsc(cv,nc,t,8),1e-12));print("  t=",precision(t,2)," P/C=",precision(r,3)));
+print("--- Scan t for lam=21 ---");
+forstep(t=0.15,0.45,0.02,my(r=bsc(pv,np,t,21)/max(bsc(cv,nc,t,21),1e-12));print("  t=",precision(t,2)," P/C=",precision(r,3)));
+quit;

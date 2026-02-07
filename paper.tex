@@ -16,7 +16,7 @@
 \maketitle
 
 \begin{abstract}
-We present empirical evidence that the normalized spacing variance of Dedekind zeta function zeros is determined by the Artin factorization structure of the underlying number field, not by field degree or abelian/non-abelian classification. Specifically, variance scales with the number of irreducible factors: fields with 2 factors (Galois groups $S_3$, $S_4$) exhibit variance $\approx 0.26$, while fields with 4 factors ($D_4$, $C_4$) exhibit variance $\approx 0.50$. A same-degree comparison of quartic extensions with groups $S_4$ vs $D_4$ yields a 44\% variance difference ($p < 0.001$), controlling for degree effects. We propose a formula relating variance to factor count and dimension entropy.
+We present empirical evidence that the normalized spacing variance of Dedekind zeta function zeros is determined by the Artin factorization structure of the underlying number field. Variance scales with the number of irreducible factors: fields with 2 factors ($S_3$, $S_4$) exhibit variance $\approx 0.26$, while fields with 4 factors ($D_4$, $C_4$) exhibit variance $\approx 0.50$. Surprisingly, direct measurement of pure Artin $L$-functions reveals that individual higher-dimensional representations have \emph{lower} variance than Riemann zeta: $L(s, \rho_2)$ for the 2-dim irrep of $S_3$ has variance $\approx 0.15$, compared to $\zeta(s)$ at $\approx 0.19$. This implies that merging zeros (forming Dedekind zetas) \emph{increases} variance toward GUE, rather than decreasing it through coupling.
 \end{abstract}
 
 \section{Introduction}
@@ -108,6 +108,24 @@ $\Phi_5(x)$ & $C_4$ & 4 & 0.527 \\
 
 \textbf{Key result:} $D_4$ (4 factors) has 44\% higher variance than $S_4$ (2 factors), despite identical degree.
 
+\subsection{Pure Artin $L$-function Measurement}
+
+We directly computed zeros of the pure Artin $L$-function $L(s, \rho_2)$ for the 2-dimensional irreducible representation of $S_3$, using the splitting field of $x^3 - 2$:
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+$L$-function & Height $T$ & Zeros & Variance \\
+\midrule
+Pure Artin $L(s, \rho_2)$ & 100 & 131 & \textbf{0.150} \\
+Riemann $\zeta(s)$ & 100 & 29 & 0.186 \\
+Dedekind $\zeta_{\mathbb{Q}(\sqrt[3]{2})}$ & 60 & 82 & 0.275 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Surprising result:} The pure 2-dim Artin $L$-function has \emph{lower} variance than Riemann zeta (0.150 vs 0.186), while the Dedekind zeta (their product) has \emph{higher} variance (0.275).
+
 \subsection{Variance Ordering}
 
 \[
@@ -143,11 +161,37 @@ $C_4$ & 4 & 2.00 & 0.52 & 0.53 \\
 
 \section{Discussion}
 
+\subsection{Factor Count Effect}
 The factor count effect overwhelms other distinctions:
 \begin{itemize}
 \item $S_3 \approx S_4$ despite different degrees (both have 2 factors)
 \item $D_4 > C_2$ despite $D_4$ being non-abelian (4 factors vs 2)
 \item $C_4 > D_4$ despite $C_4$ being abelian (entropy effect)
+\end{itemize}
+
+\subsection{Reinterpretation: Merging Increases Variance}
+
+The pure Artin measurement overturns our initial hypothesis:
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+& Old Hypothesis & New Finding \\
+\midrule
+Pure Artin $L(\rho_2)$ & $\approx 0.27$ (GUE) & \textbf{0.15} (sub-GUE) \\
+Dedekind (merged) & $< 0.27$ (coupling) & \textbf{0.28} (near GUE) \\
+Mechanism & Coupling reduces var & Merging increases var \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{New interpretation:} Individual $L$-functions (especially higher-dimensional Artin representations) have intrinsically \emph{lower} variance than GUE. When zeros from different $L$-functions are merged (as in Dedekind zetas), the imperfect interleaving \emph{increases} variance toward GUE.
+
+This explains why:
+\begin{itemize}
+\item More factors $\Rightarrow$ more merging $\Rightarrow$ higher variance
+\item $S_3$ and $S_4$ (2 factors) stay closer to component variance
+\item $D_4$ and $C_4$ (4 factors) approach GUE through extensive merging
 \end{itemize}
 
 \section{Conclusion}

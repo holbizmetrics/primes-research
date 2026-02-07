@@ -1,0 +1,4 @@
+Counting length-7 gap APs by direction up to 10M...
+Increasing: 21
+Decreasing: 15
+Ratio dec/inc: 0.71428571428571428571428571428571428571

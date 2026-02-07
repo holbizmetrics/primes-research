@@ -1,0 +1,33 @@
+(v)->if(#v<2,return(0));d=v[2]-v[1];for(i=2,#v-1,if(v[i+1]-v[i]!=d,return(0)));return(1)
+  ***   variable name expected: check_gap_ap(p,len)=primes=vector(len);primes[
+  ***                                               ^--------------------------
+Searching for length 12 gap AP starting from 10^10...
+This may take a long time.
+0
+10000000019
+0
+  ***   syntax error, unexpected end of file, expecting )-> or ',' or ')': 
+  ***   while(found<1&&ct<10^7,
+  ***                         ^-
+  ***   syntax error, unexpected end of file, expecting )-> or ',' or ')': 
+  ***   if(check_gap_ap(p,12),
+  ***                        ^-
+FOUND length 12 at p=10000000019
+  ***   variable name expected: primes=vector(12);
+  ***                           ^------------------
+  ***   at top-level: primes[1]=p
+  ***                 ^-----------
+  ***   attempt to change built-in primes.
+  ***   at top-level: for(i=2,12,primes[i]=nextprime(primes[i-1]+1))
+  ***                            ^-----------------------------------
+  ***   attempt to change built-in primes.
+  ***   at top-level: gaps=vector(11,i,primes[i+1]-primes[i])
+  ***                                        ^----------------
+  ***   incorrect type in _[_] OCcompo1 [not a vector] (t_CLOSURE).
+Gaps: gaps
+  ***   syntax error, unexpected ')', expecting end of file: );
+  ***                                                        ^--
+10000000033
+  ***   syntax error, unexpected ')', expecting end of file: )
+  ***                                                        ^-
+Search complete. Found: 1

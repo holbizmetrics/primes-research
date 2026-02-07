@@ -1,0 +1,147 @@
+=================================================================
+GEOMETRIC INVERSION OF PRIME SPACE
+Turning the geometry inside-out
+=================================================================
+
+Points: 500, Primes: 95
+
+=================================================================
+ANALYSIS 1: Radial Distribution Before/After Inversion
+=================================================================
+
+Original: small n → near center, large n → near surface
+Inverted: small n → far out, large n → near center
+
+n       Prime?  r (orig)    r (inv)     
+----------------------------------------
+2       YES     0.0040      250.0000    
+3       YES     0.0060      166.6667    
+5       YES     0.0100      100.0000    
+10              0.0200      50.0000     
+50              0.1000      10.0000     
+100             0.2000      5.0000      
+250             0.5000      2.0000      
+499     YES     0.9980      1.0020      
+
+=================================================================
+ANALYSIS 2: Prime Clustering After Inversion
+=================================================================
+
+Prime density by inverted radius:
+Radius range   Total     Primes    Density   
+---------------------------------------------
+[0, 0.5)     0         0         0.000     
+[0.5, 1)     0         0         0.000     
+[1, 2)     250       42        0.168     
+[2, 5)     150       28        0.187     
+[5, 10)     50        10        0.200     
+[10, 50)     41        11        0.268     
+[50, 500)     8         4         0.500     
+
+=================================================================
+ANALYSIS 3: Inside-Outside Exchange
+=================================================================
+
+Small primes (n ≤ 125): 30
+Large primes (n > 375): 21
+
+After inversion:
+  - Small primes (2,3,5,7,...) are now FAR from center
+  - Large primes (491,499,...) are now NEAR center
+
+=================================================================
+ANALYSIS 4: Angular Distribution Changes
+=================================================================
+
+KEY INSIGHT: Spherical inversion PRESERVES ANGLES!
+
+The angular distribution (θ, φ) is the same before and after.
+What changes is ONLY the radial distance.
+
+So the spherical harmonic structure (l, m modes) is UNCHANGED.
+
+But the RADIAL structure inverts:
+- Primes that were "core" become "halo"
+- Primes that were "halo" become "core"
+
+
+=================================================================
+ANALYSIS 5: The Composite Complement
+=================================================================
+
+Composites: 404
+
+Highly composite numbers and their inverted positions:
+n       Divisors  r (orig)    r (inv)     
+------------------------------------------
+360     24        0.7200      1.3889      
+420     24        0.8400      1.1905      
+480     24        0.9600      1.0417      
+240     20        0.4800      2.0833      
+336     20        0.6720      1.4881      
+432     20        0.8640      1.1574      
+180     18        0.3600      2.7778      
+252     18        0.5040      1.9841      
+288     18        0.5760      1.7361      
+300     18        0.6000      1.6667      
+
+After inversion, highly composite numbers (360, 420, 480...)
+move toward the CENTER, while small primes (2, 3, 5, 7...)
+move toward INFINITY.
+
+This is the "dual view":
+- Original: primes are the "atoms", composites fill space
+- Inverted: composites concentrate at core, primes form halo
+
+
+=================================================================
+ANALYSIS 6: Other Geometries
+=================================================================
+
+SPHERE: Inversion through center
+  - Clean mathematical inversion
+  - Radial distances flip
+  - Angles preserved
+
+TORUS: More complex!
+  - Has a hole (genus 1)
+  - Inversion through center would...
+    - Map inner surface to outer
+    - The "hole" becomes the "exterior"
+  - Creates interesting topology
+
+ICOSAHEDRON:
+  - 20 faces → 20 inverted faces
+  - The "soccer ball cells" would invert
+  - Dual polyhedron is the dodecahedron!
+
+HELIX:
+  - Inversion creates... involute spiral?
+  - The "coiling" direction reverses sense
+
+
+=================================================================
+SYNTHESIS
+=================================================================
+
+GEOMETRIC INVERSION = T_inv applied to SPACE
+
+What we learn:
+1. Angular structure is PRESERVED (spherical harmonics unchanged)
+2. Radial structure INVERTS (core ↔ halo)
+3. Primes and composites exchange "inside/outside" roles
+4. The DUAL VIEW reveals complementary structure
+
+CTA chain:
+  P(prime_geometry) ⊗ T_inv → P(inverted_prime_geometry)
+
+The "inside-out" view shows what the original hides:
+- Where do composites cluster?
+- What's the structure of "prime absence"?
+- The negative space has its own patterns.
+
+NEXT: Combine inversion with wave propagation
+      - Shine a wave from the center outward
+      - vs. shine a wave from infinity inward
+      - How do the scattering patterns differ?
+

@@ -1,0 +1,40 @@
+(z)->my(s,m,n);if(#z<5,return(-1));s=vector(#z-1,i,z[i+1]-z[i]);m=vecsum(s)/#s;n=vector(#s,i,s[i]/m);vecsum(vector(#n,i,(n[i]-1)^2))/#n
+=== A4 Batch Test ===
+Testing: x^4 - 5*x^2 + 5 Galois: [4, -1, 1, "C(4) = 4"]
+  ***   syntax error, unexpected end of file, expecting )-> or ',' or ')': 
+  ***   if(g[1]==12,
+  ***              ^-
+  A4: zeros=69 var=0.55924332966199113519380961824300139368
+  ***   syntax error, unexpected ')', expecting end of file: );
+  ***                                                        ^--
+  ***   at top-level: g=polgalois(p)
+  ***                   ^------------
+  *** polgalois: not an irreducible polynomial in galois: x^4 + x^2 + 1.
+Testing: x^4 + x^2 + 1 Galois: [4, -1, 1, "C(4) = 4"]
+  ***   syntax error, unexpected end of file, expecting )-> or ',' or ')': 
+  ***   if(g[1]==12,
+  ***              ^-
+  ***   at top-level: K=nfinit(p)
+  ***                   ^---------
+  *** nfinit: not an irreducible polynomial in nfinit: x^4 + x^2 + 1.
+  A4: zeros=69 var=0.55924332966199113519380961824300139368
+  ***   syntax error, unexpected ')', expecting end of file: );
+  ***                                                        ^--
+Testing: x^4 + 3*x^2 + 3 Galois: [8, -1, 1, "D(4)"]
+  ***   syntax error, unexpected end of file, expecting )-> or ',' or ')': 
+  ***   if(g[1]==12,
+  ***              ^-
+  A4: zeros=60 var=0.36718700777560105932761561738453403983
+  ***   syntax error, unexpected ')', expecting end of file: );
+  ***                                                        ^--
+Testing: x^4 + 2*x^2 + 4 Galois: [4, 1, 1, "E(4) = 2[x]2"]
+  ***   syntax error, unexpected end of file, expecting )-> or ',' or ')': 
+  ***   if(g[1]==12,
+  ***              ^-
+  A4: zeros=64 var=0.64790511108216509778260996447162186948
+  ***   syntax error, unexpected ')', expecting end of file: );
+  ***                                                        ^--
+
+=== Summary ===
+A4 samples: 4
+Mean variance: 0.53339469454543710687446120458553967417

@@ -1,0 +1,56 @@
+(z)->my(s,m,n);if(#z<5,return(-1));s=vector(#z-1,i,z[i+1]-z[i]);m=vecsum(s)/#s;n=vector(#s,i,s[i]/m);vecsum(vector(#n,i,(n[i]-1)^2))/#n
+=== EC Rank-Variance Test ===
+
+RANK 0:
+[[0, -1, 1, -10, -20], [1, -1, 1, -1, 0], [0, 0, 0, -1, 0], [0, 1, 1, 0, 0], [1, 0, 1, 1, 0]]
+[]
+  ***   syntax error, unexpected end of file, expecting )-> or ',' or ')': 
+  ***   for(i=1,#curves0,
+  ***                   ^-
+  ***   at top-level: E=ellinit(curves0[i])
+  ***                                   ^---
+  ***   incorrect type in gtos [integer expected] (t_POL).
+  ***   syntax error, unexpected end of file, expecting )-> or ',' or ')': 
+  ***   if(abs(val)>0.01,
+  ***                   ^-
+  ***   syntax error, unexpected end of file, expecting )-> or ',' or ')': 
+  ***   if(#z>5,
+  ***          ^-
+  ***   at top-level: print(curves0[i]," L(1)=",val," var=",v)
+  ***                               ^--------------------------
+  ***   incorrect type in gtos [integer expected] (t_POL).
+  ***   syntax error, unexpected ')', expecting end of file: )
+  ***                                                        ^-
+  ***   syntax error, unexpected ')', expecting end of file: )
+  ***                                                        ^-
+  ***   syntax error, unexpected ')', expecting end of file: )
+  ***                                                        ^-
+Rank 0 mean: 0.13430302142213110883573913124619347212
+
+RANK 1+:
+[[0, 0, 1, -1, 0], [1, 0, 0, -1, 0], [0, 1, 1, -2, 0], [1, -1, 0, -1, 0], [0, 0, 1, 0, -1]]
+[]
+  ***   syntax error, unexpected end of file, expecting )-> or ',' or ')': 
+  ***   for(i=1,#curves1,
+  ***                   ^-
+  ***   at top-level: E=ellinit(curves1[i])
+  ***                                   ^---
+  ***   incorrect type in gtos [integer expected] (t_POL).
+  ***   syntax error, unexpected end of file, expecting )-> or ',' or ')': 
+  ***   if(abs(val)<0.01,
+  ***                   ^-
+  ***   syntax error, unexpected end of file, expecting )-> or ',' or ')': 
+  ***   if(#z>5,
+  ***          ^-
+  ***   at top-level: print(curves1[i]," L(1)=",val," var=",v)
+  ***                               ^--------------------------
+  ***   incorrect type in gtos [integer expected] (t_POL).
+  ***   syntax error, unexpected ')', expecting end of file: )
+  ***                                                        ^-
+  ***   syntax error, unexpected ')', expecting end of file: )
+  ***                                                        ^-
+  ***   syntax error, unexpected ')', expecting end of file: )
+  ***                                                        ^-
+Rank 1+ mean: 0.13430302142213110883573913124619347212
+
+Ratio (rank1/rank0): 1.0000000000000000000000000000000000000
